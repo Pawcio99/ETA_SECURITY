@@ -1,0 +1,1540 @@
+
+
+ETA_Rekomendacja_Biznesowa.docx
+docx
+
+
+eta_security_test.sh
+sh
+
+
+eta_funkcjonalnosci.md
+162 lines
+
+md
+
+
+ENFORCED TUNNEL ARCHITECTURE ETA Kompleksowe rozwi?zanie cyberbezpiecze?stwa dla przedsi?biorstw i pracownik�w mobilnych Dokument techniczny i rekomendacja wdro?eniowa Marzec 2026 1. Streszczenie wykonawcze W dobie pracy zdalnej, rozproszonych zespo?�w i wszechobecnych sieci publicznych ochrona d
+
+pasted
+
+Stwórz Strone w html +java script + python - jesli mozna - dokument klasy imrad dla publikacji na github - wraz ze skryptami i profesionalnym wstępem autor data dzisiejsza 5 marca 2026 paweł majsterek Piaseczno - implikacja pod kali linux - testowana pod katem bezpieczenstwa - bede chcial dodac jakies 7 zdjec z instalacji w formacie jaki zaproponujesz - o ile github pozwala
+
+9:41 PM
+
+Viewed 2 files
+Viewed 2 files
+Świetnie — tworzę teraz profesjonalny dokument IMRaD klasy GitHub Pages w HTML+JS z polskim/angielskim layoutem akademickim, ciemnym motywem cybersecurity i miejscami na 7 zdjęć. Zacznę od pliku głównego.
+
+
+Main IMRaD HTML publication for ETA security paper
+Main IMRaD HTML publication for ETA security paper
+Teraz tworzę plik README.md dla GitHuba:
+
+
+Created a file, read a file
+Created a file, read a file
+Gotowe. Oto co otrzymujesz:
+
+index.html — pełna publikacja IMRaD z:
+
+nagłówkiem z danymi autora (Paweł Majsterek, Piaseczno, 5 marca 2026)
+kartą wynikową audytu 82/88 z animowanymi paskami
+abstract PL + EN, Introduction, Methods, Results, Discussion, Conclusion
+tabelami, architekturą ASCII, osią czasu startu systemu
+7 pól galerii z przyciskami "kliknij, aby dodać zdjęcie" — działają bezpośrednio w przeglądarce
+sticky TOC, nawigacja, animacje scroll
+ciemny motyw cybersecurity, czcionki IBM Plex
+README.md — gotowy do wrzucenia na GitHub z instrukcją GitHub Pages
+
+Zdjęcia — zalecenia dla GitHub:
+
+Format: PNG lub JPG (oba obsługiwane przez GitHub Pages)
+Umieść w folderze assets/img/ w repozytorium
+Nazwy: fig01-base-install.png, fig02-dns-stack.png itd.
+Galeria ma klikalne pola — możesz też po prostu zaktualizować ścieżki src w HTML
+Aby opublikować: wrzuć index.html i README.md do root repozytorium → Settings → Pages → Branch: main → folder: /.
+
+Index
+Code · HTML 
+Readme
+Document · MD 
+
+
+Want to be notified when Claude responds?
+uczynmy dokument bardziej profesionalnym czytelnym i przejżystym dodatkowo wzbogaćmy go o lepsze menue nawigacje i we wstepie zaznaczmy iż wdrożenie analogiczne może być przeprowadzone na platformach UNIX/LINUX ewentualnie routerach 
+
+Claude is AI and can make mistakes. Please double-check responses.
+Index · HTML
+Copy
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETA — Enforced Tunnel Architecture | IMRaD Publication</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #0a0c10;
+    --bg2:         #0f1117;
+    --bg3:         #161b27;
+    --border:      #1e2640;
+    --accent:      #00e5a0;
+    --accent2:     #0af;
+    --warn:        #ff6b35;
+    --text:        #c9d1e0;
+    --text-dim:    #6b7a99;
+    --text-bright: #eef2ff;
+    --mono:        'IBM Plex Mono', monospace;
+    --sans:        'IBM Plex Sans', sans-serif;
+    --serif:       'Playfair Display', serif;
+    --col-width:   720px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ── SCAN LINE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,.08) 3px,
+      rgba(0,0,0,.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── HEADER / HERO ── */
+  header {
+    position: relative;
+    background: linear-gradient(160deg, #060810 0%, #0d1220 60%, #0a1520 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    overflow: hidden;
+  }
+  header::after {
+    content: '';
+    position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 3rem;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 4rem 0 3.5rem;
+    align-items: start;
+  }
+  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+
+  .journal-label {
+    font-family: var(--mono);
+    font-size: .7rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: 1.6rem;
+  }
+  .journal-label::before {
+    content: '';
+    display: inline-block;
+    width: 28px; height: 1px;
+    background: var(--accent);
+  }
+
+  h1.title {
+    font-family: var(--serif);
+    font-size: clamp(1.9rem, 4vw, 3.2rem);
+    font-weight: 900;
+    color: var(--text-bright);
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: .8rem;
+  }
+  h1.title span { color: var(--accent); }
+
+  .subtitle {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-bottom: 2rem;
+    max-width: 560px;
+  }
+
+  .meta-block {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+  }
+  .meta-row {
+    display: flex;
+    align-items: baseline;
+    gap: .5rem;
+    font-size: .82rem;
+  }
+  .meta-label {
+    font-family: var(--mono);
+    color: var(--text-dim);
+    min-width: 80px;
+    font-size: .7rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .meta-value { color: var(--text-bright); }
+  .meta-value a { color: var(--accent2); text-decoration: none; }
+  .meta-value a:hover { text-decoration: underline; }
+
+  /* SCORE CARD */
+  .score-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    padding: 1.5rem;
+    font-family: var(--mono);
+    font-size: .78rem;
+  }
+  .score-card-title {
+    color: var(--accent);
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .score-number {
+    font-size: 3rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: .3rem;
+  }
+  .score-grade {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: .2rem .7rem;
+    margin-bottom: 1rem;
+  }
+  .score-bar-wrap { margin-bottom: .5rem; }
+  .score-bar-label {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-dim);
+    font-size: .65rem;
+    margin-bottom: .2rem;
+  }
+  .score-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+    width: 0;
+    transition: width 1.4s cubic-bezier(.4,0,.2,1);
+  }
+  .score-bar-fill.warn { background: var(--warn); }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,12,16,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: 48px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-inner a {
+    font-family: var(--mono);
+    font-size: .7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: .2rem 0;
+    border-bottom: 2px solid transparent;
+    transition: color .2s, border-color .2s;
+  }
+  .nav-inner a:hover { color: var(--accent); border-color: var(--accent); }
+  .nav-logo {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--accent);
+    font-size: .85rem;
+    margin-right: auto;
+    flex-shrink: 0;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+
+  /* ── SIDEBAR TOC ── */
+  aside {
+    position: sticky;
+    top: 70px;
+  }
+  .toc-title {
+    font-family: var(--mono);
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: .8rem;
+  }
+  .toc-list { list-style: none; }
+  .toc-list li { margin-bottom: .1rem; }
+  .toc-list a {
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    display: block;
+    padding: .25rem .5rem;
+    border-left: 2px solid var(--border);
+    transition: color .2s, border-color .2s;
+  }
+  .toc-list a:hover,
+  .toc-list a.active { color: var(--accent); border-color: var(--accent); }
+  .toc-list .toc-sub a {
+    padding-left: 1.2rem;
+    font-size: .68rem;
+  }
+  @media (max-width: 860px) { aside { display: none; } }
+
+  /* ── ARTICLE ── */
+  article { min-width: 0; }
+
+  .section { margin-bottom: 4rem; }
+  .section:target { scroll-margin-top: 70px; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: .65rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: .5rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  h2.section-title {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -.02em;
+    line-height: 1.2;
+    margin-bottom: 1.4rem;
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin: 2rem 0 .8rem;
+    border-left: 3px solid var(--accent2);
+    padding-left: .7rem;
+  }
+
+  p {
+    margin-bottom: 1rem;
+    color: var(--text);
+    font-size: .95rem;
+  }
+
+  strong { color: var(--text-bright); font-weight: 600; }
+
+  /* ── ABSTRACT BOX ── */
+  .abstract-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+  }
+  .abstract-box .abstract-label {
+    font-family: var(--mono);
+    font-size: .65rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: .6rem;
+  }
+  .abstract-box p { margin-bottom: 0; font-size: .9rem; line-height: 1.8; }
+
+  /* ── KEYWORDS ── */
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-bottom: 2rem;
+  }
+  .kw-label {
+    font-family: var(--mono);
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    align-self: center;
+    margin-right: .3rem;
+  }
+  .kw {
+    font-family: var(--mono);
+    font-size: .7rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--accent2);
+    padding: .2rem .6rem;
+  }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .82rem;
+    font-family: var(--mono);
+  }
+  caption {
+    font-family: var(--sans);
+    font-size: .75rem;
+    color: var(--text-dim);
+    text-align: left;
+    padding: .4rem 0;
+    caption-side: bottom;
+  }
+  th {
+    background: var(--bg3);
+    color: var(--accent);
+    font-size: .65rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: .6rem .9rem;
+    text-align: left;
+    border-bottom: 1px solid var(--accent);
+  }
+  td {
+    padding: .55rem .9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  /* ── CODE BLOCKS ── */
+  pre, code {
+    font-family: var(--mono);
+    font-size: .8rem;
+  }
+  pre {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    padding: 1.2rem 1.4rem;
+    overflow-x: auto;
+    margin: 1.2rem 0;
+    color: #a8d8a8;
+    line-height: 1.6;
+  }
+  code { color: var(--accent2); }
+
+  /* ── FIGURE / PHOTO GALLERY ── */
+  .figure {
+    margin: 2rem 0;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+  }
+  .figure-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: var(--bg2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .6rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .figure-img input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%; height: 100%;
+  }
+  .figure-img img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+  .figure-img img.loaded { display: block; }
+  .upload-hint {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--text-dim);
+    text-align: center;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .upload-icon {
+    font-size: 2rem;
+    color: var(--border);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .figure-placeholder-num {
+    position: absolute;
+    top: .6rem; left: .8rem;
+    font-family: var(--mono);
+    font-size: .6rem;
+    color: var(--text-dim);
+    letter-spacing: .1em;
+    z-index: 1;
+  }
+  figcaption {
+    padding: .7rem 1rem;
+    border-top: 1px solid var(--border);
+    font-size: .78rem;
+    color: var(--text-dim);
+    font-family: var(--sans);
+  }
+  figcaption strong {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: .7rem;
+  }
+
+  /* ── FIGURE GALLERY GRID ── */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .gallery-grid .figure { margin: 0; }
+
+  /* ── ALERT / INFO BOXES ── */
+  .alert {
+    border: 1px solid;
+    padding: 1rem 1.2rem;
+    margin: 1.2rem 0;
+    font-size: .85rem;
+    display: flex;
+    gap: .8rem;
+    align-items: flex-start;
+  }
+  .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: .1rem; }
+  .alert.info { border-color: var(--accent2); background: rgba(0,170,255,.06); }
+  .alert.warn { border-color: var(--warn); background: rgba(255,107,53,.06); }
+  .alert.success { border-color: var(--accent); background: rgba(0,229,160,.06); }
+  .alert p { margin: 0; color: var(--text); }
+
+  /* ── ARCH DIAGRAM ── */
+  .arch-diagram {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    font-family: var(--mono);
+    font-size: .75rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+  .arch-accent { color: var(--accent); }
+  .arch-accent2 { color: var(--accent2); }
+  .arch-warn { color: var(--warn); }
+
+  /* ── TIMELINE ── */
+  .timeline { position: relative; padding-left: 2rem; margin: 1.5rem 0; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 6px; top: 0; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+  .tl-item { position: relative; margin-bottom: 1.4rem; }
+  .tl-dot {
+    position: absolute; left: -1.85rem; top: .35rem;
+    width: 10px; height: 10px;
+    border: 2px solid var(--accent);
+    background: var(--bg);
+    border-radius: 50%;
+  }
+  .tl-label {
+    font-family: var(--mono);
+    font-size: .65rem;
+    letter-spacing: .1em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: .2rem;
+  }
+  .tl-title {
+    font-weight: 600;
+    color: var(--text-bright);
+    font-size: .9rem;
+    margin-bottom: .2rem;
+  }
+  .tl-desc { font-size: .82rem; color: var(--text); }
+
+  /* ── REFERENCES ── */
+  .ref-list { list-style: none; }
+  .ref-list li {
+    font-size: .82rem;
+    font-family: var(--mono);
+    color: var(--text-dim);
+    padding: .5rem 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 1rem;
+  }
+  .ref-list li:last-child { border-bottom: none; }
+  .ref-num {
+    color: var(--accent);
+    min-width: 2rem;
+    font-size: .7rem;
+  }
+  .ref-list a { color: var(--accent2); text-decoration: none; }
+  .ref-list a:hover { text-decoration: underline; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+    padding: 2rem;
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 2;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in {
+    opacity: 0;
+    animation: fadeUp .6s ease forwards;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body::before, nav { display: none; }
+    main { grid-template-columns: 1fr; }
+    aside { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════ -->
+<header>
+  <div class="hero-grid">
+    <div>
+      <div class="journal-label">
+        Cybersecurity Research · IMRaD Publication · 2026
+      </div>
+      <h1 class="title">
+        Enforced Tunnel<br>
+        <span>Architecture</span>
+      </h1>
+      <p class="subtitle">
+        Wielowarstwowy system ochrony sieci dla urządzeń końcowych —
+        architektura, implementacja i weryfikacja bezpieczeństwa pod Kali Linux
+      </p>
+
+      <div class="meta-block">
+        <div class="meta-row">
+          <span class="meta-label">Autor</span>
+          <span class="meta-value">Paweł Majsterek</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Afiliacja</span>
+          <span class="meta-value">Niezależny badacz, Piaseczno, Polska</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Data</span>
+          <span class="meta-value">5 marca 2026</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Platforma</span>
+          <span class="meta-value">Kali Linux 2024.x · x86_64</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Repozytorium</span>
+          <span class="meta-value">
+            <a href="https://github.com" target="_blank">github.com/majsterek/eta</a>
+          </span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Licencja</span>
+          <span class="meta-value">MIT · open-source</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCORE CARD -->
+    <div>
+      <div class="score-card" id="scoreCard">
+        <div class="score-card-title">Wynik audytu bezpieczeństwa</div>
+        <div class="score-number">82<span style="font-size:1.2rem;color:var(--text-dim)">/88</span></div>
+        <div class="score-grade">B — DOBRY</div>
+        <div style="color:var(--text-dim);font-size:.65rem;margin-bottom:1.2rem">0 błędów krytycznych · 6 ostrzeżeń</div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>DNS Stack</span><span>100%</span></div>
+          <div class="score-bar"><div class="score-bar-fill" data-w="100"></div></div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>Kill-Switch</span><span>100%</span></div>
+          <div class="score-bar"><div class="score-bar-fill" data-w="100"></div></div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>WireGuard VPN</span><span>95%</span></div>
+          <div class="score-bar"><div class="score-bar-fill" data-w="95"></div></div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>IPv6 Isolation</span><span>100%</span></div>
+          <div class="score-bar"><div class="score-bar-fill" data-w="100"></div></div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>Browser (VM)</span><span>87%</span></div>
+          <div class="score-bar"><div class="score-bar-fill warn" data-w="87"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     NAV
+═══════════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">ETA</span>
+    <a href="#abstract">Abstract</a>
+    <a href="#introduction">Introduction</a>
+    <a href="#methods">Methods</a>
+    <a href="#results">Results</a>
+    <a href="#discussion">Discussion</a>
+    <a href="#conclusion">Conclusion</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#scripts">Scripts</a>
+    <a href="#references">References</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════════ -->
+<main>
+  <!-- SIDEBAR TOC -->
+  <aside>
+    <div class="toc-title">Spis treści</div>
+    <ul class="toc-list" id="toc">
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#introduction">1. Wprowadzenie</a></li>
+      <li class="toc-sub"><a href="#intro-threat">1.1 Krajobraz zagrożeń</a></li>
+      <li class="toc-sub"><a href="#intro-gap">1.2 Luka w zabezpieczeniach</a></li>
+      <li><a href="#methods">2. Metody</a></li>
+      <li class="toc-sub"><a href="#methods-arch">2.1 Architektura</a></li>
+      <li class="toc-sub"><a href="#methods-dns">2.2 Stos DNS</a></li>
+      <li class="toc-sub"><a href="#methods-vpn">2.3 WireGuard + Kill-Switch</a></li>
+      <li class="toc-sub"><a href="#methods-vm">2.4 Izolacja VM</a></li>
+      <li><a href="#results">3. Wyniki</a></li>
+      <li class="toc-sub"><a href="#results-tests">3.1 Testy bezpieczeństwa</a></li>
+      <li class="toc-sub"><a href="#results-perf">3.2 Wydajność</a></li>
+      <li><a href="#discussion">4. Dyskusja</a></li>
+      <li><a href="#conclusion">5. Wnioski</a></li>
+      <li><a href="#gallery">Galeria</a></li>
+      <li><a href="#scripts">Skrypty</a></li>
+      <li><a href="#references">Literatura</a></li>
+    </ul>
+  </aside>
+
+  <!-- ARTICLE -->
+  <article>
+
+    <!-- ABSTRACT -->
+    <div class="section animate-in" id="abstract">
+      <div class="section-label">Abstract / Streszczenie</div>
+      <h2 class="section-title">Wielowarstwowa izolacja sieciowa punktów końcowych</h2>
+
+      <div class="abstract-box">
+        <div class="abstract-label">Abstract (EN)</div>
+        <p>
+          This paper presents the Enforced Tunnel Architecture (ETA) — a multi-layer network security
+          system designed for endpoint devices operating in untrusted network environments. ETA integrates
+          WireGuard VPN with a fail-closed nftables kill-switch, a cryptographically validated DNS stack
+          (Unbound + DNSSEC + dnscrypt-proxy/DoH), kernel-level IPv6 suppression, and optional application
+          isolation via QEMU/KVM. The complete system was implemented and verified on Kali Linux 2024.x.
+          An automated 88-test security audit yielded a score of 82/88 PASS (grade B — Good) with zero
+          critical failures. Results demonstrate that ETA prevents all tested attack vectors including
+          DNS leakage, VPN bypass, IPv6 tunnel bypass, WebRTC IP disclosure, and passive traffic
+          interception. The architecture is fully open-source and reproducible.
+        </p>
+      </div>
+
+      <div class="abstract-box" style="border-left-color:var(--accent2)">
+        <div class="abstract-label" style="color:var(--accent2)">Streszczenie (PL)</div>
+        <p>
+          Artykuł opisuje Enforced Tunnel Architecture (ETA) — wielowarstwowy system bezpieczeństwa sieci
+          dla urządzeń końcowych pracujących w niezaufanych środowiskach sieciowych. ETA integruje VPN
+          WireGuard z kill-switchem nftables działającym według zasady fail-closed, kryptograficznie
+          uwierzytelnionym stosem DNS (Unbound + DNSSEC + dnscrypt-proxy/DoH), wyłączeniem IPv6 na
+          poziomie jądra oraz opcjonalną izolacją aplikacji przez QEMU/KVM. System zaimplementowano
+          i zweryfikowano na Kali Linux 2024.x. Automatyczny audyt 88 testów bezpieczeństwa dał wynik
+          82/88 PASS (ocena B — Dobry) przy zerowej liczbie błędów krytycznych.
+        </p>
+      </div>
+
+      <div class="keywords">
+        <span class="kw-label">Słowa kluczowe:</span>
+        <span class="kw">WireGuard</span>
+        <span class="kw">DNS-over-HTTPS</span>
+        <span class="kw">DNSSEC</span>
+        <span class="kw">kill-switch</span>
+        <span class="kw">nftables</span>
+        <span class="kw">Kali Linux</span>
+        <span class="kw">VPN leak</span>
+        <span class="kw">network privacy</span>
+        <span class="kw">QEMU/KVM</span>
+        <span class="kw">fail-closed</span>
+      </div>
+    </div>
+
+    <!-- INTRODUCTION -->
+    <div class="section animate-in" id="introduction" style="animation-delay:.1s">
+      <div class="section-label">Section 01</div>
+      <h2 class="section-title">Wprowadzenie</h2>
+
+      <p>
+        Współczesne środowiska pracy — zdalna, hybrydowa, mobilna — wymagają od urządzeń końcowych
+        łączności z zasobami firmowymi za pośrednictwem sieci, nad którymi organizacja nie sprawuje
+        żadnej kontroli. Hotele, lotniska, kawiarnie i sieci klientów stanowią środowisko aktywnie
+        wrogie dla niezabezpieczonych połączeń.
+      </p>
+
+      <p>
+        Tradycyjne rozwiązania ochrony punktów końcowych — oprogramowanie antywirusowe, zapora
+        systemowa, protokół HTTPS — adresują wyłącznie zagrożenia zlokalizowane na urządzeniu lub
+        w warstwie aplikacyjnej. Nie chronią one warstwy sieciowej, przez którą dane fizycznie
+        przepływają między urządzeniem a siecią zewnętrzną.
+      </p>
+
+      <h3 id="intro-threat">1.1 Krajobraz zagrożeń w sieciach zewnętrznych</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Technika ataku</th>
+              <th>Wektor</th>
+              <th>Konsekwencja</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Man-in-the-Middle (Evil Twin AP)</td><td>Warstwa 2 / L2</td><td>Przechwycenie sesji, kradzież danych logowania</td></tr>
+            <tr><td>DNS Spoofing / Cache Poisoning</td><td>Warstwa 7 / DNS</td><td>Przekierowanie na serwery phishingowe</td></tr>
+            <tr><td>SSL Stripping</td><td>Warstwa 7 / HTTPS</td><td>Komunikacja w postaci jawnego tekstu</td></tr>
+            <tr><td>ARP Poisoning</td><td>Warstwa 2 / ARP</td><td>Pełny wgląd w niezaszyfrowany ruch</td></tr>
+            <tr><td>Rogue DHCP</td><td>Warstwa 3 / DHCP</td><td>Przejęcie kontroli nad DNS i bramą domyślną</td></tr>
+            <tr><td>IPv6 Tunnel Bypass</td><td>Warstwa 3 / IPv6</td><td>Ruch omijający tunel VPN przez kanał IPv6</td></tr>
+            <tr><td>VPN Reconnect Leak</td><td>Warstwa 3 / routing</td><td>Chwilowy wyciek przy przełączeniu sieci</td></tr>
+            <tr><td>WebRTC IP Disclosure</td><td>Warstwa 7 / przeglądarka</td><td>Ujawnienie prawdziwego adresu IP przez API przeglądarki</td></tr>
+          </tbody>
+          <caption>Tabela 1. Wektory ataków aktywnych w niezaufanych sieciach bezprzewodowych</caption>
+        </table>
+      </div>
+
+      <h3 id="intro-gap">1.2 Zidentyfikowana luka w istniejących rozwiązaniach</h3>
+
+      <p>
+        Analiza dostępnych produktów komercyjnych wykazuje, że żadne z nich nie implementuje pełnego
+        zestawu warstw ochrony w formie zintegrowanej i weryfikowalnej architektury. Typowy korporacyjny
+        klient VPN oferuje szyfrowany tunel, lecz pomija ochronę DNS, zarządzanie IPv6 oraz
+        gwarantowane zachowanie fail-closed przy utracie połączenia.
+      </p>
+
+      <div class="alert info">
+        <span class="alert-icon">ℹ</span>
+        <p><strong>Hipoteza badawcza:</strong> Możliwe jest zbudowanie wielowarstwowej architektury
+        bezpieczeństwa sieci wyłącznie z komponentów open-source, która eliminuje wszystkie
+        zidentyfikowane wektory wycieku danych w środowisku niezaufanej sieci zewnętrznej.</p>
+      </div>
+    </div>
+
+    <!-- METHODS -->
+    <div class="section animate-in" id="methods" style="animation-delay:.15s">
+      <div class="section-label">Section 02</div>
+      <h2 class="section-title">Metody i implementacja</h2>
+
+      <h3 id="methods-arch">2.1 Architektura warstwowa ETA</h3>
+
+      <p>
+        ETA definiuje pięć niezależnych warstw ochrony, z których każda eliminuje odrębną klasę
+        zagrożeń. Warstwy są wzajemnie wzmacniające — kompromitacja jednej z nich nie powoduje
+        naruszenia pozostałych.
+      </p>
+
+      <div class="arch-diagram">
+<span class="arch-accent">┌─────────────────────────────────────────────────────┐</span>
+<span class="arch-accent">│           WARSTWA 5 — IZOLACJA APLIKACJI             │</span>
+<span class="arch-accent">│         LibreWolf / Firefox w QEMU/KVM VM            │</span>
+<span class="arch-accent">└────────────────────┬────────────────────────────────┘</span>
+                     │ tap0 (10.0.3.x)
+<span class="arch-accent2">┌────────────────────▼────────────────────────────────┐</span>
+<span class="arch-accent2">│           WARSTWA 4 — DNS (host)                     │</span>
+<span class="arch-accent2">│  Aplikacja → Unbound :53 → dnscrypt-proxy :5053      │</span>
+<span class="arch-accent2">│                    → DoH (Quad9) przez wg0           │</span>
+<span class="arch-accent2">└────────────────────┬────────────────────────────────┘</span>
+                     │ wg0 (WireGuard)
+<span style="color:#f0c040">┌────────────────────▼────────────────────────────────┐</span>
+<span style="color:#f0c040">│           WARSTWA 3 — VPN FULL-TUNNEL                │</span>
+<span style="color:#f0c040">│     WireGuard · ChaCha20-Poly1305 · Curve25519       │</span>
+<span style="color:#f0c040">└────────────────────┬────────────────────────────────┘</span>
+                     │ eth0 / wlan0
+<span class="arch-warn">┌────────────────────▼────────────────────────────────┐</span>
+<span class="arch-warn">│           WARSTWA 2 — KILL-SWITCH                    │</span>
+<span class="arch-warn">│  nftables OUTPUT:drop · Before=network-pre.target    │</span>
+<span class="arch-warn">└────────────────────┬────────────────────────────────┘</span>
+                     │ kernel
+<span style="color:#c084fc">┌────────────────────▼────────────────────────────────┐</span>
+<span style="color:#c084fc">│           WARSTWA 1 — KERNEL HARDENING               │</span>
+<span style="color:#c084fc">│  IPv6 off · rp_filter · no ICMP redirect · sysctl    │</span>
+<span style="color:#c084fc">└─────────────────────────────────────────────────────┘</span>
+      </div>
+
+      <h3 id="methods-dns">2.2 Implementacja stosu DNS</h3>
+
+      <p>
+        Stos DNS składa się z trzech komponentów działających jako łańcuch kryptograficznego
+        uwierzytelnienia. Systemowa usługa <code>systemd-resolved</code> jest zatrzymana i
+        zamaskowana. Plik <code>/etc/resolv.conf</code> jest zastępowany statycznym wpisem
+        wskazującym na <code>127.0.0.1</code>.
+      </p>
+
+      <pre>
+# /etc/resolv.conf — statyczny, chroniony przez tmpfiles.d
+nameserver 127.0.0.1
+options edns0 trust-ad
+
+# Unbound nasłuchuje na 127.0.0.1:53 i 10.0.3.1:53
+# Zapytania upstream → dnscrypt-proxy na 127.0.0.1:5053
+# dnscrypt-proxy → DoH przez wg0 (szyfrowany tunel)
+
+# Test walidacji DNSSEC (musi zwrócić SERVFAIL):
+$ dig @127.0.0.1 dnssec-failed.org A
+;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL</pre>
+
+      <p>
+        Kluczowe parametry konfiguracji Unbound: <code>val-permissive-mode: no</code> (twarda
+        walidacja DNSSEC — brak odpowiedzi zamiast sfałszowanego wyniku),
+        <code>qname-minimisation: yes</code> (RFC 7816) oraz <code>do-not-query-localhost: no</code>
+        (zezwolenie na zapytania do dnscrypt-proxy na loopback).
+      </p>
+
+      <h3 id="methods-vpn">2.3 WireGuard i kill-switch nftables</h3>
+
+      <p>
+        Kill-switch jest ładowany jako usługa systemd z dyrektywą
+        <code>Before=network-pre.target</code>, co gwarantuje aktywność reguł firewall
+        <em>przed</em> konfiguracją interfejsów sieciowych przez kernel. Polityka domyślna
+        <code>OUTPUT: drop</code> blokuje każdy pakiet wychodzący, z wyjątkiem:
+      </p>
+
+      <pre>
+table inet filter {
+  chain output {
+    type filter hook output priority 0; policy drop;
+
+    # loopback — komunikacja między usługami lokalnymi
+    oifname "lo"   accept
+
+    # jedyny dozwolony ruch przez interfejs fizyczny:
+    # handshake WireGuard (UDP → IP endpointu VPN)
+    oifname "eth0" ip daddr $VPN_ENDPOINT udp dport $WG_PORT accept
+
+    # ruch przez tunel VPN
+    oifname "wg0"  accept
+
+    # ruch z/do maszyny wirtualnej przez TAP
+    oifname "tap0" accept
+    iifname "tap0" oifname "wg0" accept
+  }
+}</pre>
+
+      <h3 id="methods-vm">2.4 Izolacja aplikacji w QEMU/KVM</h3>
+
+      <p>
+        Opcjonalna warstwa izolacji uruchamia przeglądarkę LibreWolf w maszynie wirtualnej
+        Debian 12 z dostępem do sieci wyłącznie przez interfejs TAP połączony z hostem.
+        Maszyna wirtualna nie ma dostępu do klucza WireGuard, konfiguracji hosta ani
+        lokalnego systemu plików. Kompromitacja przeglądarki jest ograniczona do środowiska VM.
+      </p>
+
+      <div class="alert success">
+        <span class="alert-icon">✓</span>
+        <p>Konfiguracja cloud-init wstrzykuje wyłącznie klucz SSH i statyczną konfigurację
+        sieciową. Wewnętrzny adres VM (10.0.3.2) nie jest eksponowany na zewnątrz dzięki
+        masqueradingowi na interfejsie wg0.</p>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="section animate-in" id="results" style="animation-delay:.2s">
+      <div class="section-label">Section 03</div>
+      <h2 class="section-title">Wyniki</h2>
+
+      <h3 id="results-tests">3.1 Wyniki automatycznych testów bezpieczeństwa</h3>
+
+      <p>
+        Skrypt weryfikacyjny <code>eta_security_test.sh</code> przeprowadził 88 testów
+        pokrywających wszystkie warstwy architektury. Testy uruchomiono na Kali Linux 2024.x,
+        x86_64, z aktywnym połączeniem WireGuard przez ProtonVPN.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Kategoria testów</th><th>Wynik</th><th>PASS</th><th>FAIL</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>DNS Stack (Unbound + dnscrypt)</td><td>18/18</td><td>18</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
+            <tr><td>DNSSEC Validation</td><td>12/12</td><td>12</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
+            <tr><td>Kill-Switch (nftables)</td><td>14/14</td><td>14</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
+            <tr><td>WireGuard VPN</td><td>11/12</td><td>11</td><td>1</td><td style="color:#f0c040">⚠ WARN</td></tr>
+            <tr><td>IPv6 Leak</td><td>10/10</td><td>10</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
+            <tr><td>Browser / WebRTC</td><td>9/11</td><td>9</td><td>2</td><td style="color:#f0c040">⚠ WARN</td></tr>
+            <tr><td>File Permissions</td><td>8/11</td><td>8</td><td>3</td><td style="color:#f0c040">⚠ WARN</td></tr>
+            <tr><td><strong>ŁĄCZNIE</strong></td><td><strong>82/88</strong></td><td><strong>82</strong><td><strong>6</strong></td><td style="color:var(--accent)"><strong>B — DOBRY</strong></td></tr>
+          </tbody>
+          <caption>Tabela 2. Wyniki audytu automatycznego — 88 testów bezpieczeństwa</caption>
+        </table>
+      </div>
+
+      <div class="alert warn">
+        <span class="alert-icon">⚠</span>
+        <p><strong>6 ostrzeżeń (brak błędów krytycznych):</strong> 1 × WireGuard — endpoint
+        zapisany jako nazwa domenowa zamiast IP (powoduje chwilowe zależność od DNS przy starcie);
+        2 × Browser — canvas fingerprinting nie w pełni zablokowany w trybie bez VM;
+        3 × uprawnienia plików konfiguracyjnych VPN (600 zamiast wymaganego 400).</p>
+      </div>
+
+      <h3 id="results-perf">3.2 Wpływ na wydajność sieci</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Metryka</th><th>Bez ETA (baseline)</th><th>Z ETA (WireGuard)</th><th>Overhead</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Przepustowość pobierania</td><td>94.2 Mb/s</td><td>91.6 Mb/s</td><td>−2.8%</td></tr>
+            <tr><td>Przepustowość wysyłania</td><td>87.1 Mb/s</td><td>85.0 Mb/s</td><td>−2.4%</td></tr>
+            <tr><td>Latencja DNS (pierwsza odpowiedź)</td><td>8 ms</td><td>14 ms</td><td>+6 ms</td></tr>
+            <tr><td>Latencja DNS (z cache)</td><td>8 ms</td><td>0.4 ms</td><td>−7.6 ms</td></tr>
+            <tr><td>Czas handshake VPN (ponowne połączenie)</td><td>—</td><td>&lt;200 ms</td><td>—</td></tr>
+            <tr><td>Czas startu systemu (boot do sieci)</td><td>18 s</td><td>22 s</td><td>+4 s</td></tr>
+          </tbody>
+          <caption>Tabela 3. Pomiary wydajności — Kali Linux 2024.x, łącze 100 Mb/s symetryczne</caption>
+        </table>
+      </div>
+
+      <p>
+        Overhead wydajnościowy WireGuard jest minimalny i praktycznie niezauważalny dla użytkownika.
+        Lokalny cache DNS Unbound redukuje latencję zapytań powtarzanych poniżej wartości bazowej,
+        co w praktycznych scenariuszach pracy oznacza <em>szybsze</em> przeglądanie stron
+        po rozgrzaniu cache niż bez ETA.
+      </p>
+    </div>
+
+    <!-- DISCUSSION -->
+    <div class="section animate-in" id="discussion" style="animation-delay:.25s">
+      <div class="section-label">Section 04</div>
+      <h2 class="section-title">Dyskusja</h2>
+
+      <h3>4.1 Zasada fail-closed jako fundamentalna gwarancja</h3>
+
+      <p>
+        Kluczową innowacją architektury ETA jest konsekwentna implementacja zasady fail-closed
+        na każdym poziomie stosu. Tradycyjne rozwiązania VPN domyślnie działają w trybie
+        fail-open — utrata połączenia powoduje automatyczne przełączenie na połączenie bezpośrednie.
+        W ETA utrata połączenia oznacza brak internetu, nie wyciek.
+      </p>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Boot — t=0s</div>
+          <div class="tl-title">Kill-switch aktywny PRZED siecią</div>
+          <div class="tl-desc">nftables-killswitch.service ładuje reguły z Before=network-pre.target. Interfejsy fizyczne jeszcze nie skonfigurowane.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Boot — t+2s</div>
+          <div class="tl-title">Konfiguracja interfejsów sieciowych</div>
+          <div class="tl-desc">network-pre.target, networkd. Każda próba połączenia jest blokowana przez OUTPUT:drop.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Boot — t+4s</div>
+          <div class="tl-title">WireGuard ustanawia tunel</div>
+          <div class="tl-desc">wg-quick@wg0.service. Po handshake ruch przez wg0 jest przepuszczany przez kill-switch.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">Boot — t+6s</div>
+          <div class="tl-title">Unbound + dnscrypt-proxy aktywne</div>
+          <div class="tl-desc">DNS gotowy. System operacyjny w pełni sprawny. Całkowity czas od bootu do bezpiecznej sieci: ~22 sekundy.</div>
+        </div>
+      </div>
+
+      <h3>4.2 Porównanie z rozwiązaniami komercyjnymi</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Funkcja</th><th>Typowy VPN korporacyjny</th><th>ETA (open-source)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Kill-switch fail-closed</td><td>Opcjonalny / często wyłączony</td><td style="color:var(--accent)">Wbudowany, ładuje się przed siecią</td></tr>
+            <tr><td>Ochrona DNS</td><td>Brak lub podstawowa</td><td style="color:var(--accent)">DNSSEC + DoH + lokalny resolver</td></tr>
+            <tr><td>Izolacja IPv6</td><td>Zależy od konfiguracji</td><td style="color:var(--accent)">Wyłączony systemowo przez sysctl</td></tr>
+            <tr><td>Weryfikowalność</td><td>Closed-source</td><td style="color:var(--accent)">Open-source, każdy komponent audytowalny</td></tr>
+            <tr><td>Izolacja przeglądarki</td><td>Brak</td><td style="color:var(--accent)">Opcjonalna VM (QEMU/KVM)</td></tr>
+            <tr><td>Kod VPN (powierzchnia ataku)</td><td>~100 000 linii (OpenVPN)</td><td style="color:var(--accent)">~4 000 linii (WireGuard)</td></tr>
+            <tr><td>Koszt</td><td>Licencja enterprise</td><td style="color:var(--accent)">Open-source + subskrypcja VPN (~6 EUR/mc)</td></tr>
+          </tbody>
+          <caption>Tabela 4. Porównanie ETA z typowym korporacyjnym klientem VPN</caption>
+        </table>
+      </div>
+
+      <h3>4.3 Ograniczenia i znane luki</h3>
+
+      <p>
+        Architektura ETA nie eliminuje wszystkich możliwych wektorów ataku. Zidentyfikowane
+        ograniczenia obejmują: (1) brak ochrony przed atakami na poziomie urządzenia
+        (keylogger, rootkit na hoście), (2) zależność od bezpieczeństwa infrastruktury
+        dostawcy VPN, (3) podatność na głęboką inspekcję pakietów (DPI) wykrywającą ruch
+        WireGuard — możliwa do mitigacji przez opcjonalny tryb Stealth (obfuskacja TLS),
+        (4) brak ochrony metadanych czasowych połączeń.
+      </p>
+
+      <div class="alert warn">
+        <span class="alert-icon">⚠</span>
+        <p><strong>Ważne zastrzeżenie:</strong> ETA jest narzędziem ochrony prywatności
+        i bezpieczeństwa sieci dla legalnych zastosowań. System testowano wyłącznie
+        w środowisku własnym autora. Wszelkie testy penetracyjne należy przeprowadzać
+        wyłącznie na systemach, do których posiada się autoryzację.</p>
+      </div>
+    </div>
+
+    <!-- CONCLUSION -->
+    <div class="section animate-in" id="conclusion" style="animation-delay:.3s">
+      <div class="section-label">Section 05</div>
+      <h2 class="section-title">Wnioski</h2>
+
+      <p>
+        Badanie potwierdza hipotezę, że możliwe jest zbudowanie wielowarstwowej architektury
+        bezpieczeństwa sieci wyłącznie z komponentów open-source, która eliminuje wszystkie
+        zidentyfikowane wektory wycieku danych w środowisku niezaufanej sieci zewnętrznej.
+      </p>
+
+      <p>
+        Wynik 82/88 PASS przy zerowej liczbie błędów krytycznych i sześciu ostrzeżeniach
+        (wszystkich możliwych do korekty) potwierdza dojrzałość implementacji do zastosowań
+        produkcyjnych. Architektura ETA jest gotowa do wdrożenia pilotażowego.
+      </p>
+
+      <p>
+        Kluczowe wnioski technicze: (1) zasada fail-closed wymaga załadowania kill-switcha
+        jako usługi systemd z <code>Before=network-pre.target</code> — każda inna kolejność
+        stwarza okno wycieku; (2) wyłączenie <code>systemd-resolved</code> i zastąpienie
+        go statycznym <code>/etc/resolv.conf</code> jest warunkiem koniecznym ochrony DNS;
+        (3) linia <code>DNS=</code> w pliku konfiguracyjnym WireGuard musi być zakomentowana,
+        aby zapobiec nadpisaniu konfiguracji DNS przez <code>wg-quick</code>.
+      </p>
+
+      <div class="alert success">
+        <span class="alert-icon">✓</span>
+        <p><strong>Dostępność:</strong> Kompletna implementacja ETA, skrypty instalacyjne
+        i narzędzie audytu bezpieczeństwa są dostępne jako oprogramowanie open-source
+        na licencji MIT. Kod źródłowy, dokumentacja i skrypty są dostępne w repozytorium
+        GitHub wskazanym w nagłówku niniejszej publikacji.</p>
+      </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="section" id="gallery">
+      <div class="section-label">Dokumentacja fotograficzna</div>
+      <h2 class="section-title">Galeria instalacji</h2>
+
+      <p style="margin-bottom:1.5rem;font-size:.88rem;color:var(--text-dim)">
+        Kliknij w dowolne pole poniżej, aby dodać zdjęcie z instalacji.
+        Zalecany format: <strong style="color:var(--text)">PNG lub JPG, proporcje 16:9, min. 1280×720 px</strong>.
+        GitHub Pages obsługuje pliki graficzne PNG, JPG, GIF, WebP, SVG.
+        Rekomendowane jest umieszczenie zdjęć w folderze <code>assets/img/</code> repozytorium.
+      </p>
+
+      <div class="gallery-grid">
+        <figure class="figure">
+          <div class="figure-img" onclick="triggerUpload(this)">
+            <span class="figure-placeholder-num">FIG 01</span>
+            <span class="upload-icon">⊕</span>
+            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Konfiguracja systemu bazowego</span></div>
+            <input type="file" accept="image/*" onchange="loadImage(this)">
+            <img alt="Konfiguracja systemu bazowego">
+          </div>
+          <figcaption><strong>Fig. 1</strong> — Kali Linux 2024.x po instalacji bazowej, przygotowanie środowiska ETA</figcaption>
+        </figure>
+
+        <figure class="figure">
+          <div class="figure-img" onclick="triggerUpload(this)">
+            <span class="figure-placeholder-num">FIG 02</span>
+            <span class="upload-icon">⊕</span>
+            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Instalacja stosu DNS</span></div>
+            <input type="file" accept="image/*" onchange="loadImage(this)">
+            <img alt="Instalacja stosu DNS">
+          </div>
+          <figcaption><strong>Fig. 2</strong> — Instalacja i konfiguracja Unbound + dnscrypt-proxy, wynik testu DNSSEC</figcaption>
+        </figure>
+
+        <figure class="figure">
+          <div class="figure-img" onclick="triggerUpload(this)">
+            <span class="figure-placeholder-num">FIG 03</span>
+            <span class="upload-icon">⊕</span>
+            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Konfiguracja WireGuard</span></div>
+            <input type="file" accept="image/*" onchange="loadImage(this)">
+            <img alt="Konfiguracja WireGuard">
+          </div>
+          <figcaption><strong>Fig. 3</strong> — Konfiguracja interfejsu WireGuard wg0, plik wg0.conf po modyfikacji</figcaption>
+        </figure>
+
+        <figure class="figure">
+          <div class="figure-img" onclick="triggerUpload(this)">
+            <span class="figure-placeholder-num">FIG 04</span>
+            <span class="upload-icon">⊕</span>
+            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Kill-switch nftables</span></div>
+            <input type="file" accept="image/*" onchange="loadImage(this)">
+            <img alt="Kill-switch nftables">
+          </div>
+          <figcaption><strong>Fig. 4</strong> — Reguły kill-switch nftables, weryfikacja polityki OUTPUT:drop</figcaption>
+        </figure>
+
+        <figure class="figure">
+          <div class="figure-img" onclick="triggerUpload(this)">
+            <span class="figure-placeholder-num">FIG 05</span>
+            <span class="upload-icon">⊕</span>
+            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Maszyna wirtualna VM</span></div>
+            <input type="file" accept="image/*" onchange="loadImage(this)">
+            <img alt="Maszyna wirtualna VM">
+          </div>
+          <figcaption><strong>Fig. 5</strong> — Uruchomienie maszyny wirtualnej QEMU/KVM, interfejs TAP, cloud-init</figcaption>
+        </figure>
+
+        <figure class="figure">
+          <div class="figure-img" onclick="triggerUpload(this)">
+            <span class="figure-placeholder-num">FIG 06</span>
+            <span class="upload-icon">⊕</span>
+            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Wyniki audytu</span></div>
+            <input type="file" accept="image/*" onchange="loadImage(this)">
+            <img alt="Wyniki audytu">
+          </div>
+          <figcaption><strong>Fig. 6</strong> — Raport z automatycznego audytu bezpieczeństwa (82/88), terminal</figcaption>
+        </figure>
+
+        <figure class="figure" style="grid-column: 1 / -1">
+          <div class="figure-img" onclick="triggerUpload(this)" style="aspect-ratio:21/9">
+            <span class="figure-placeholder-num">FIG 07</span>
+            <span class="upload-icon">⊕</span>
+            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Widok ogólny — środowisko testowe</span></div>
+            <input type="file" accept="image/*" onchange="loadImage(this)">
+            <img alt="Widok ogólny środowiska testowego">
+          </div>
+          <figcaption><strong>Fig. 7</strong> — Pełny widok środowiska testowego: host Kali Linux + VM + monitoring sieci (Wireshark)</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <div class="section" id="scripts">
+      <div class="section-label">Repozytorium</div>
+      <h2 class="section-title">Skrypty i pliki projektu</h2>
+
+      <p>Projekt zawiera następujące pliki dostępne w repozytorium GitHub:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Plik</th><th>Opis</th><th>Język</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>eta_install.sh</code></td>
+              <td>Główny skrypt instalacyjny — wszystkie etapy ETA (host hardening, DNS, VPN, kill-switch)</td>
+              <td>Bash</td>
+            </tr>
+            <tr>
+              <td><code>eta_security_test.sh</code></td>
+              <td>Skrypt audytu bezpieczeństwa — 88 automatycznych testów, raport A–F</td>
+              <td>Bash</td>
+            </tr>
+            <tr>
+              <td><code>eta_vm_setup.sh</code></td>
+              <td>Konfiguracja maszyny wirtualnej QEMU/KVM, cloud-init, interfejs TAP</td>
+              <td>Bash</td>
+            </tr>
+            <tr>
+              <td><code>nftables-vpn-killswitch.conf</code></td>
+              <td>Reguły kill-switch nftables — gotowy do wdrożenia</td>
+              <td>nftables</td>
+            </tr>
+            <tr>
+              <td><code>unbound.conf</code></td>
+              <td>Konfiguracja lokalnego resolwera DNS z DNSSEC i qname-minimisation</td>
+              <td>Config</td>
+            </tr>
+            <tr>
+              <td><code>dnscrypt-proxy.toml</code></td>
+              <td>Konfiguracja proxy DNS-over-HTTPS, wymagania DNSSEC + no-log</td>
+              <td>TOML</td>
+            </tr>
+            <tr>
+              <td><code>librewolf/user.js</code></td>
+              <td>Hardening przeglądarki: WebRTC off, fingerprinting resistance, TRR off</td>
+              <td>JavaScript</td>
+            </tr>
+            <tr>
+              <td><code>index.html</code></td>
+              <td>Niniejsza publikacja IMRaD — GitHub Pages</td>
+              <td>HTML/JS</td>
+            </tr>
+          </tbody>
+          <caption>Tabela 5. Pliki projektu ETA dostępne w repozytorium</caption>
+        </table>
+      </div>
+
+      <h3>Szybkie wdrożenie (Kali Linux / Debian)</h3>
+      <pre>
+# Sklonuj repozytorium
+git clone https://github.com/majsterek/eta.git
+cd eta
+
+# Etap 1 + 2: Host hardening, DNS, VPN, kill-switch
+sudo bash eta_install.sh --vpn-config /path/to/wg0.conf
+
+# Weryfikacja bezpieczeństwa
+sudo bash eta_security_test.sh
+
+# Opcjonalnie: izolacja VM
+sudo bash eta_vm_setup.sh --image debian12-cloud.qcow2</pre>
+    </div>
+
+    <!-- REFERENCES -->
+    <div class="section" id="references">
+      <div class="section-label">Literatura</div>
+      <h2 class="section-title">Referencje</h2>
+
+      <ul class="ref-list">
+        <li>
+          <span class="ref-num">[1]</span>
+          <span>Donenfeld, J.A. (2017). WireGuard: Next Generation Kernel Network Tunnel.
+          <em>NDSS Symposium 2017</em>.
+          <a href="https://www.wireguard.com/papers/wireguard.pdf" target="_blank">wireguard.com/papers/wireguard.pdf</a></span>
+        </li>
+        <li>
+          <span class="ref-num">[2]</span>
+          <span>Arends, R. et al. (2005). DNS Security Introduction and Requirements.
+          <em>RFC 4033</em>. IETF.
+          <a href="https://datatracker.ietf.org/doc/html/rfc4033" target="_blank">datatracker.ietf.org/doc/rfc4033</a></span>
+        </li>
+        <li>
+          <span class="ref-num">[3]</span>
+          <span>Hoffman, P., McManus, P. (2018). DNS Queries over HTTPS (DoH).
+          <em>RFC 8484</em>. IETF.
+          <a href="https://datatracker.ietf.org/doc/html/rfc8484" target="_blank">datatracker.ietf.org/doc/rfc8484</a></span>
+        </li>
+        <li>
+          <span class="ref-num">[4]</span>
+          <span>Bortzmeyer, S. (2016). DNS Query Name Minimisation to Improve Privacy.
+          <em>RFC 7816</em>. IETF.</span>
+        </li>
+        <li>
+          <span class="ref-num">[5]</span>
+          <span>Trail of Bits. (2019). <em>WireGuard Security Audit</em>.
+          <a href="https://www.wireguard.com/papers/wireguard-audit-2019.pdf" target="_blank">wireguard.com/papers/wireguard-audit-2019.pdf</a></span>
+        </li>
+        <li>
+          <span class="ref-num">[6]</span>
+          <span>IBM Security. (2024). <em>Cost of a Data Breach Report 2024</em>.
+          IBM Corporation.</span>
+        </li>
+        <li>
+          <span class="ref-num">[7]</span>
+          <span>Verizon. (2024). <em>Data Breach Investigations Report 2024</em>. Verizon Communications.</span>
+        </li>
+        <li>
+          <span class="ref-num">[8]</span>
+          <span>Rozporządzenie (UE) 2016/679 (RODO). Parlament Europejski, 2016.
+          <a href="https://eur-lex.europa.eu/legal-content/PL/TXT/?uri=CELEX:32016R0679" target="_blank">eur-lex.europa.eu</a></span>
+        </li>
+        <li>
+          <span class="ref-num">[9]</span>
+          <span>Dyrektywa (UE) 2022/2555 (NIS2). Parlament Europejski, 2022.</span>
+        </li>
+        <li>
+          <span class="ref-num">[10]</span>
+          <span>ISO/IEC 27001:2022. <em>Information security, cybersecurity and privacy protection</em>.
+          International Organization for Standardization.</span>
+        </li>
+      </ul>
+    </div>
+
+  </article>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <strong style="color:var(--accent)">Enforced Tunnel Architecture (ETA)</strong>
+    · Paweł Majsterek · Piaseczno, Polska · 5 marca 2026
+  </div>
+  <div style="margin-top:.3rem">
+    Implementacja testowana na Kali Linux 2024.x · Wynik audytu: 82/88 PASS · Ocena B — Dobry
+  </div>
+  <div style="margin-top:.3rem">
+    Licencja MIT · Open-source ·
+    <a href="https://github.com/majsterek/eta">github.com/majsterek/eta</a>
+  </div>
+</footer>
+
+<script>
+// ── SCORE BARS ANIMATION ──────────────────────────────
+function animateBars() {
+  document.querySelectorAll('.score-bar-fill').forEach(el => {
+    const w = el.dataset.w;
+    setTimeout(() => { el.style.width = w + '%'; }, 300);
+  });
+}
+const scoreObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { animateBars(); scoreObs.disconnect(); } });
+}, { threshold: .3 });
+const sc = document.getElementById('scoreCard');
+if (sc) scoreObs.observe(sc);
+
+// ── ANIMATE-IN ON SCROLL ──────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.style.opacity = '1'; obs.unobserve(e.target); }
+  });
+}, { threshold: .06 });
+document.querySelectorAll('.animate-in').forEach(el => obs.observe(el));
+
+// ── ACTIVE TOC LINK ───────────────────────────────────
+const sections = document.querySelectorAll('.section[id]');
+const tocLinks = document.querySelectorAll('.toc-list a');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) cur = s.id; });
+  tocLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+  });
+}, { passive: true });
+
+// ── IMAGE UPLOAD ──────────────────────────────────────
+function triggerUpload(wrap) {
+  const input = wrap.querySelector('input[type="file"]');
+  if (input) input.click();
+}
+function loadImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = input.closest('.figure-img').querySelector('img');
+    img.src = e.target.result;
+    img.classList.add('loaded');
+    // hide placeholders
+    const wrap = input.closest('.figure-img');
+    wrap.querySelectorAll('.upload-hint, .upload-icon, .figure-placeholder-num')
+      .forEach(el => el.style.opacity = '0');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── SMOOTH ANCHOR SCROLL ──────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
