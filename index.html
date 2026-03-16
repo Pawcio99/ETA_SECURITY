@@ -1,1654 +1,948 @@
-- P.Majsterek 
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ETA — Enforced Tunnel Architecture | IMRaD Publication</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<title>YHWH i Entropia — O Stawaniu się Rzeczywistości</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[
+    {left:'$$',right:'$$',display:true},
+    {left:'$',right:'$',display:false}
+  ],throwOnError:false});"></script>
+
 <style>
-  :root {
-    --bg:          #0a0c10;
-    --bg2:         #0f1117;
-    --bg3:         #161b27;
-    --border:      #1e2640;
-    --accent:      #00e5a0;
-    --accent2:     #0af;
-    --warn:        #ff6b35;
-    --text:        #c9d1e0;
-    --text-dim:    #6b7a99;
-    --text-bright: #eef2ff;
-    --mono:        'IBM Plex Mono', monospace;
-    --sans:        'IBM Plex Sans', sans-serif;
-    --serif:       'Playfair Display', serif;
-    --col-width:   720px;
-  }
+:root {
+  --void:      #f5f0e8;
+  --deep:      #ede7d9;
+  --panel:     #faf7f2;
+  --border:    rgba(140,100,30,0.18);
+  --gold:      #8a6a1a;
+  --gold-dim:  #b08a30;
+  --gold-pale: rgba(160,120,40,0.06);
+  --amber:     #a0700a;
+  --cyan:      #1a6e8a;
+  --rust:      #8a2a10;
+  --text:      #2c2416;
+  --text-soft: #6a5a3a;
+  --text-dim:  #c0ab88;
+  --display:   'Playfair Display', Georgia, serif;
+  --body:      'Crimson Pro', Georgia, serif;
+  --mono:      'Share Tech Mono', monospace;
+  --max:       760px;
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:18px;scroll-behavior:smooth;}
+body{background:var(--void);color:var(--text);font-family:var(--body);line-height:1.85;overflow-x:hidden;}
 
-  html { scroll-behavior: smooth; font-size: 16px; }
+body::after{content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9000;opacity:0.25;mix-blend-mode:multiply;}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-weight: 300;
-    line-height: 1.75;
-    overflow-x: hidden;
-  }
+#bar{position:fixed;top:0;left:0;height:1px;
+  background:linear-gradient(90deg,var(--gold-dim),var(--amber),var(--gold-dim));
+  width:0;z-index:8000;box-shadow:0 0 8px var(--gold);}
 
-  /* ── SCAN LINE OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 3px,
-      rgba(0,0,0,.08) 3px,
-      rgba(0,0,0,.08) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
-  }
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  align-items:flex-start;padding:8rem 4rem 6rem;position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg, #f9f4eb 0%, #f0e8d4 50%, #ede3cc 100%);}
+.hero-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(140,100,30,0.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(140,100,30,0.06) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 20% 50%,black 0%,transparent 70%);}
+.hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(160,120,40,0.08) 0%,transparent 70%);
+  top:50%;left:-100px;transform:translateY(-50%);pointer-events:none;}
 
-  /* ── HEADER / HERO ── */
-  header {
-    position: relative;
-    background: linear-gradient(160deg, #060810 0%, #0d1220 60%, #0a1520 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    overflow: hidden;
-  }
-  header::after {
-    content: '';
-    position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
-  }
+.hero-eyebrow{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.3em;
+  color:var(--gold-dim);text-transform:uppercase;margin-bottom:2rem;
+  opacity:0;animation:rise 1s 0.2s forwards;}
+.hero h1{font-family:var(--display);font-size:clamp(2.8rem,6vw,5rem);font-weight:900;
+  line-height:1.0;letter-spacing:-0.02em;color:#1a1206;max-width:700px;
+  opacity:0;animation:rise 1s 0.4s forwards;}
+.hero h1 em{font-style:italic;color:var(--gold);}
+.hero-sub{font-family:var(--display);font-style:italic;font-size:1.15rem;
+  color:var(--text-soft);margin-top:1.5rem;max-width:520px;line-height:1.6;
+  opacity:0;animation:rise 1s 0.6s forwards;}
 
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 3rem;
-    max-width: 1160px;
-    margin: 0 auto;
-    padding: 4rem 0 3.5rem;
-    align-items: start;
-  }
-  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+/* ── KaTeX hero formula box ── */
+.hero-katex{margin-top:3rem;padding:1.1rem 1.6rem;
+  border:1px solid var(--border);background:rgba(255,250,240,0.8);
+  display:inline-block;opacity:0;animation:rise 1s 0.8s forwards;
+  box-shadow:0 2px 16px rgba(140,100,30,0.08);}
+.hero-katex .katex{color:var(--gold);font-size:1.1rem;}
 
-  .journal-label {
-    font-family: var(--mono);
-    font-size: .7rem;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    margin-bottom: 1.6rem;
-  }
-  .journal-label::before {
-    content: '';
-    display: inline-block;
-    width: 28px; height: 1px;
-    background: var(--accent);
-  }
+.hero-scroll{position:absolute;bottom:3rem;left:4rem;
+  font-family:var(--mono);font-size:0.6rem;letter-spacing:0.25em;
+  color:var(--text-dim);text-transform:uppercase;
+  display:flex;flex-direction:column;align-items:flex-start;gap:0.5rem;
+  opacity:0;animation:rise 1s 1.2s forwards;}
+.hero-scroll-line{width:40px;height:1px;
+  background:linear-gradient(to right,var(--gold-dim),transparent);
+  animation:pulse-line 2s 1.5s infinite;}
 
-  h1.title {
-    font-family: var(--serif);
-    font-size: clamp(1.9rem, 4vw, 3.2rem);
-    font-weight: 900;
-    color: var(--text-bright);
-    line-height: 1.15;
-    letter-spacing: -.02em;
-    margin-bottom: .8rem;
-  }
-  h1.title span { color: var(--accent); }
+@keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+@keyframes pulse-line{0%,100%{opacity:.3;width:40px;}50%{opacity:1;width:70px;}}
 
-  .subtitle {
-    font-size: 1.05rem;
-    color: var(--text-dim);
-    font-weight: 300;
-    margin-bottom: 2rem;
-    max-width: 560px;
-  }
+/* ── MAIN ── */
+.main{max-width:var(--max);margin:0 auto;padding:6rem 2rem 10rem;}
 
-  .meta-block {
-    display: flex;
-    flex-direction: column;
-    gap: .4rem;
-  }
-  .meta-row {
-    display: flex;
-    align-items: baseline;
-    gap: .5rem;
-    font-size: .82rem;
-  }
-  .meta-label {
-    font-family: var(--mono);
-    color: var(--text-dim);
-    min-width: 80px;
-    font-size: .7rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-  .meta-value { color: var(--text-bright); }
-  .meta-value a { color: var(--accent2); text-decoration: none; }
-  .meta-value a:hover { text-decoration: underline; }
+.essay-section{margin-bottom:6rem;opacity:0;transform:translateY(20px);
+  transition:opacity 0.7s ease,transform 0.7s ease;}
+.essay-section.visible{opacity:1;transform:none;}
 
-  /* SCORE CARD */
-  .score-card {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-top: 2px solid var(--accent);
-    padding: 1.5rem;
-    font-family: var(--mono);
-    font-size: .78rem;
-  }
-  .score-card-title {
-    color: var(--accent);
-    font-size: .65rem;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-  .score-number {
-    font-size: 3rem;
-    font-weight: 600;
-    color: var(--text-bright);
-    line-height: 1;
-    margin-bottom: .3rem;
-  }
-  .score-grade {
-    display: inline-block;
-    background: var(--accent);
-    color: #000;
-    font-size: 1.2rem;
-    font-weight: 600;
-    padding: .2rem .7rem;
-    margin-bottom: 1rem;
-  }
-  .score-bar-wrap { margin-bottom: .5rem; }
-  .score-bar-label {
-    display: flex;
-    justify-content: space-between;
-    color: var(--text-dim);
-    font-size: .65rem;
-    margin-bottom: .2rem;
-  }
-  .score-bar {
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .score-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--accent);
-    width: 0;
-    transition: width 1.4s cubic-bezier(.4,0,.2,1);
-  }
-  .score-bar-fill.warn { background: var(--warn); }
+.section-marker{display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;}
+.section-marker-num{font-family:var(--mono);font-size:0.6rem;color:var(--gold-dim);
+  letter-spacing:0.2em;min-width:2rem;}
+.section-marker-line{flex:1;height:1px;
+  background:linear-gradient(to right,var(--border),transparent);}
 
-  /* ── NAV ── */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(10,12,16,.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-inner {
-    max-width: 1160px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    height: 48px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .nav-inner::-webkit-scrollbar { display: none; }
-  .nav-inner a {
-    font-family: var(--mono);
-    font-size: .7rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    text-decoration: none;
-    white-space: nowrap;
-    padding: .2rem 0;
-    border-bottom: 2px solid transparent;
-    transition: color .2s, border-color .2s;
-  }
-  .nav-inner a:hover { color: var(--accent); border-color: var(--accent); }
-  .nav-logo {
-    font-family: var(--mono);
-    font-weight: 600;
-    color: var(--accent);
-    font-size: .85rem;
-    margin-right: auto;
-    flex-shrink: 0;
-  }
+h2{font-family:var(--display);font-size:clamp(1.6rem,3vw,2.1rem);font-weight:700;
+  line-height:1.2;color:#1a1206;margin-bottom:2rem;letter-spacing:-0.01em;}
+h2 em{color:var(--gold);font-style:italic;}
 
-  /* ── MAIN LAYOUT ── */
-  main {
-    max-width: 1160px;
-    margin: 0 auto;
-    padding: 3rem 2rem 6rem;
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 4rem;
-    align-items: start;
-  }
-  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+p{font-size:1.05rem;color:var(--text);margin-bottom:1.4rem;
+  text-align:justify;hyphens:auto;}
+p:last-child{margin-bottom:0;}
 
-  /* ── SIDEBAR TOC ── */
-  aside {
-    position: sticky;
-    top: 70px;
-  }
-  .toc-title {
-    font-family: var(--mono);
-    font-size: .65rem;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: .8rem;
-  }
-  .toc-list { list-style: none; }
-  .toc-list li { margin-bottom: .1rem; }
-  .toc-list a {
-    font-family: var(--mono);
-    font-size: .72rem;
-    color: var(--text-dim);
-    text-decoration: none;
-    display: block;
-    padding: .25rem .5rem;
-    border-left: 2px solid var(--border);
-    transition: color .2s, border-color .2s;
-  }
-  .toc-list a:hover,
-  .toc-list a.active { color: var(--accent); border-color: var(--accent); }
-  .toc-list .toc-sub a {
-    padding-left: 1.2rem;
-    font-size: .68rem;
-  }
-  @media (max-width: 860px) { aside { display: none; } }
+/* ── PULL QUOTE ── */
+.pq{border-left:2px solid var(--gold);padding:1.2rem 0 1.2rem 2rem;margin:2.5rem 0;position:relative;background:rgba(255,250,240,0.6);}
+.pq::before{content:'';position:absolute;left:-1px;top:0;width:1px;height:100%;
+  background:linear-gradient(to bottom,transparent,var(--gold),transparent);}
+.pq p{font-family:var(--display);font-style:italic;font-size:1.15rem;
+  color:var(--amber);text-align:left;margin:0;line-height:1.6;}
 
-  /* ── ARTICLE ── */
-  article { min-width: 0; }
+/* ── FORMULA BOX (KaTeX) ── */
+.fbox{background:rgba(255,252,245,0.9);border:1px solid var(--border);border-left:3px solid var(--gold);
+  padding:1.4rem 1.6rem;margin:2rem 0;position:relative;overflow:hidden;
+  box-shadow:0 2px 12px rgba(140,100,30,0.07);}
+.fbox::before{content:attr(data-label);position:absolute;top:-1px;right:1rem;
+  font-family:var(--mono);font-size:0.55rem;letter-spacing:0.2em;color:var(--gold-dim);
+  text-transform:uppercase;background:rgba(255,252,245,0.9);padding:0 0.5rem;}
+.fbox .katex-display{margin:0;text-align:left;}
+.fbox .katex-display>.katex{color:var(--gold);font-size:1.05rem;}
+.fbox .katex{color:var(--gold);}
+.fbox .fcomment{display:block;margin-top:0.8rem;font-size:0.82rem;
+  color:var(--text-soft);font-family:var(--body);font-style:italic;line-height:1.5;}
 
-  .section { margin-bottom: 4rem; }
-  .section:target { scroll-margin-top: 70px; }
+/* ── SCIENCE NOTE ── */
+.snote{background:rgba(26,110,138,0.04);border:1px solid rgba(26,110,138,0.18);
+  padding:1.2rem 1.5rem;margin:2rem 0;}
+.snote::before{content:'nota naukowa';font-family:var(--mono);font-size:0.55rem;
+  letter-spacing:0.2em;color:var(--cyan);text-transform:uppercase;
+  display:block;margin-bottom:0.5rem;}
+.snote p{font-size:0.93rem;color:var(--text-soft);margin:0;text-align:left;}
 
-  .section-label {
-    font-family: var(--mono);
-    font-size: .65rem;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: .5rem;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-  }
-  .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border), transparent);
-  }
+.divider{text-align:center;margin:4rem 0;color:var(--gold-dim);
+  letter-spacing:0.8em;font-size:0.7rem;}
 
-  h2.section-title {
-    font-family: var(--serif);
-    font-size: 1.7rem;
-    font-weight: 700;
-    color: var(--text-bright);
-    letter-spacing: -.02em;
-    line-height: 1.2;
-    margin-bottom: 1.4rem;
-  }
+/* ── INTERACTIVE ── */
+.interactive-wrap{margin:5rem 0;}
+.interactive-wrap.visible{}
 
-  h3 {
-    font-family: var(--sans);
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-bright);
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    margin: 2rem 0 .8rem;
-    border-left: 3px solid var(--accent2);
-    padding-left: .7rem;
-  }
+.interactive-header{display:flex;align-items:baseline;justify-content:space-between;
+  border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:0;}
+.interactive-title{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--gold-dim);}
+.interactive-subtitle{font-family:var(--mono);font-size:0.55rem;
+  color:var(--text-dim);letter-spacing:0.1em;}
 
-  p {
-    margin-bottom: 1rem;
-    color: var(--text);
-    font-size: .95rem;
-  }
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:rgba(255,252,245,0.7);}
+.tab-btn{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--text-dim);background:none;border:none;
+  padding:0.7rem 1.2rem;cursor:pointer;
+  border-bottom:2px solid transparent;position:relative;top:1px;
+  transition:color 0.2s,border-color 0.2s;}
+.tab-btn:hover{color:var(--gold-dim);}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
 
-  strong { color: var(--text-bright); font-weight: 600; }
+/* ── TAB PANELS ── */
+.chart-panel{display:none;}
+.chart-panel.active{display:block;}
+.charts-container{position:relative;}
 
-  /* ── ABSTRACT BOX ── */
-  .abstract-box {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    padding: 1.5rem 2rem;
-    margin-bottom: 2rem;
-  }
-  .abstract-box .abstract-label {
-    font-family: var(--mono);
-    font-size: .65rem;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: .6rem;
-  }
-  .abstract-box p { margin-bottom: 0; font-size: .9rem; line-height: 1.8; }
+/* ── CANVAS ── */
+.canvas-wrap{position:relative;background:var(--panel);border:1px solid var(--border);border-bottom:none;box-shadow:inset 0 1px 4px rgba(140,100,30,0.04);}
+canvas{display:block;width:100%;height:320px;}
 
-  /* ── KEYWORDS ── */
-  .keywords {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .4rem;
-    margin-bottom: 2rem;
-  }
-  .kw-label {
-    font-family: var(--mono);
-    font-size: .65rem;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    align-self: center;
-    margin-right: .3rem;
-  }
-  .kw {
-    font-family: var(--mono);
-    font-size: .7rem;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    color: var(--accent2);
-    padding: .2rem .6rem;
-  }
+/* ── CONTROLS ── */
+.controls{display:flex;flex-wrap:wrap;gap:1.5rem;padding:1.2rem 1.5rem;
+  background:rgba(245,240,232,0.8);border:1px solid var(--border);border-top:none;border-bottom:none;}
+.ctrl{display:flex;flex-direction:column;gap:0.4rem;min-width:110px;flex:1;}
+.ctrl-label{font-family:var(--mono);font-size:0.56rem;letter-spacing:0.15em;
+  text-transform:uppercase;color:var(--text-dim);}
 
-  /* ── TABLES ── */
-  .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: .82rem;
-    font-family: var(--mono);
-  }
-  caption {
-    font-family: var(--sans);
-    font-size: .75rem;
-    color: var(--text-dim);
-    text-align: left;
-    padding: .4rem 0;
-    caption-side: bottom;
-  }
-  th {
-    background: var(--bg3);
-    color: var(--accent);
-    font-size: .65rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    padding: .6rem .9rem;
-    text-align: left;
-    border-bottom: 1px solid var(--accent);
-  }
-  td {
-    padding: .55rem .9rem;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-    vertical-align: top;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,.02); }
+/* ── RANGE SLIDER ── */
+input[type=range]{-webkit-appearance:none;width:100%;height:2px;
+  background:var(--border);outline:none;cursor:pointer;border-radius:0;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;
+  background:var(--gold);border-radius:50%;cursor:pointer;
+  box-shadow:0 0 6px rgba(200,168,75,0.6);transition:transform 0.1s;}
+input[type=range]::-webkit-slider-thumb:active{transform:scale(1.3);}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--gold);
+  border-radius:50%;cursor:pointer;border:none;}
 
-  /* ── CODE BLOCKS ── */
-  pre, code {
-    font-family: var(--mono);
-    font-size: .8rem;
-  }
-  pre {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent2);
-    padding: 1.2rem 1.4rem;
-    overflow-x: auto;
-    margin: 1.2rem 0;
-    color: #a8d8a8;
-    line-height: 1.6;
-  }
-  code { color: var(--accent2); }
+.ctrl-val{font-family:var(--mono);font-size:0.68rem;color:var(--gold);letter-spacing:0.05em;}
+.chart-desc{font-family:var(--body);font-style:italic;font-size:0.84rem;
+  color:var(--text-soft);background:rgba(255,252,245,0.9);padding:0.9rem 1.5rem;
+  border:1px solid var(--border);border-top:none;line-height:1.6;}
 
-  /* ── FIGURE / PHOTO GALLERY ── */
-  .figure {
-    margin: 2rem 0;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-  }
-  .figure-img {
-    width: 100%;
-    aspect-ratio: 16/9;
-    background: var(--bg2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: .6rem;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-  }
-  .figure-img input[type="file"] {
-    position: absolute; inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%; height: 100%;
-  }
-  .figure-img img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: none;
-  }
-  .figure-img img.loaded { display: block; }
-  .upload-hint {
-    font-family: var(--mono);
-    font-size: .7rem;
-    color: var(--text-dim);
-    text-align: center;
-    pointer-events: none;
-    z-index: 1;
-  }
-  .upload-icon {
-    font-size: 2rem;
-    color: var(--border);
-    pointer-events: none;
-    z-index: 1;
-  }
-  .figure-placeholder-num {
-    position: absolute;
-    top: .6rem; left: .8rem;
-    font-family: var(--mono);
-    font-size: .6rem;
-    color: var(--text-dim);
-    letter-spacing: .1em;
-    z-index: 1;
-  }
-  figcaption {
-    padding: .7rem 1rem;
-    border-top: 1px solid var(--border);
-    font-size: .78rem;
-    color: var(--text-dim);
-    font-family: var(--sans);
-  }
-  figcaption strong {
-    color: var(--accent);
-    font-family: var(--mono);
-    font-weight: 600;
-    font-size: .7rem;
-  }
+/* ── SIDE NAV ── */
+.sidenav{position:fixed;right:1.5rem;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:0.6rem;z-index:500;}
+.sndot{width:5px;height:5px;border-radius:50%;background:var(--text-dim);
+  cursor:pointer;transition:background 0.3s,transform 0.3s;position:relative;}
+.sndot.active{background:var(--gold);transform:scale(1.6);}
+.sndot:hover::after{content:attr(data-tip);position:absolute;right:14px;top:50%;
+  transform:translateY(-50%);font-family:var(--mono);font-size:0.55rem;
+  letter-spacing:0.1em;white-space:nowrap;color:var(--gold);
+  background:rgba(255,252,245,0.95);border:1px solid var(--border);padding:0.2rem 0.5rem;
+  box-shadow:0 2px 8px rgba(140,100,30,0.12);}
 
-  /* ── FIGURE GALLERY GRID ── */
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-  .gallery-grid .figure { margin: 0; }
+/* ── FOOTER ── */
+.foot{border-top:1px solid var(--border);padding:3rem 2rem;max-width:var(--max);
+  margin:0 auto;font-family:var(--mono);font-size:0.6rem;
+  color:var(--text-soft);letter-spacing:0.08em;line-height:2;}
 
-  /* ── ALERT / INFO BOXES ── */
-  .alert {
-    border: 1px solid;
-    padding: 1rem 1.2rem;
-    margin: 1.2rem 0;
-    font-size: .85rem;
-    display: flex;
-    gap: .8rem;
-    align-items: flex-start;
-  }
-  .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: .1rem; }
-  .alert.info { border-color: var(--accent2); background: rgba(0,170,255,.06); }
-  .alert.warn { border-color: var(--warn); background: rgba(255,107,53,.06); }
-  .alert.success { border-color: var(--accent); background: rgba(0,229,160,.06); }
-  .alert p { margin: 0; color: var(--text); }
+@media(max-width:768px){
+  .hero{padding:6rem 1.5rem 4rem;}
+  .main{padding:4rem 1.5rem 6rem;}
+  .sidenav{display:none;}
+  .controls{gap:1rem;}
+  .hero-katex .katex{font-size:0.85rem;}
+}
 
-  /* ── ARCH DIAGRAM ── */
-  .arch-diagram {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    padding: 2rem;
-    font-family: var(--mono);
-    font-size: .75rem;
-    color: var(--text-dim);
-    line-height: 1.5;
-    overflow-x: auto;
-    margin: 1.5rem 0;
-  }
-  .arch-accent { color: var(--accent); }
-  .arch-accent2 { color: var(--accent2); }
-  .arch-warn { color: var(--warn); }
+/* ══ TAB SYSTEM — opacity trick, always full height in DOM ══ */
+.iw-tabs { display:flex; flex-wrap:wrap; border-bottom:1px solid var(--border); background:rgba(255,252,245,.7); }
+.iw-tab  { font-family:var(--mono); font-size:.58rem; letter-spacing:.12em; text-transform:uppercase;
+           color:var(--text-dim); background:none; border:none; padding:.7rem 1.1rem; cursor:pointer;
+           border-bottom:2px solid transparent; position:relative; top:1px; transition:color .2s; }
+.iw-tab:hover { color:var(--gold-dim); }
+.iw-tab.on    { color:var(--gold); border-bottom-color:var(--gold); }
 
-  /* ── TIMELINE ── */
-  .timeline { position: relative; padding-left: 2rem; margin: 1.5rem 0; }
-  .timeline::before {
-    content: '';
-    position: absolute; left: 6px; top: 0; bottom: 0;
-    width: 1px; background: var(--border);
-  }
-  .tl-item { position: relative; margin-bottom: 1.4rem; }
-  .tl-dot {
-    position: absolute; left: -1.85rem; top: .35rem;
-    width: 10px; height: 10px;
-    border: 2px solid var(--accent);
-    background: var(--bg);
-    border-radius: 50%;
-  }
-  .tl-label {
-    font-family: var(--mono);
-    font-size: .65rem;
-    letter-spacing: .1em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: .2rem;
-  }
-  .tl-title {
-    font-weight: 600;
-    color: var(--text-bright);
-    font-size: .9rem;
-    margin-bottom: .2rem;
-  }
-  .tl-desc { font-size: .82rem; color: var(--text); }
+/* Panels stacked — inactive = invisible but laid out */
+.iw-stack { position:relative; }
+.iw-panel { }
+.iw-panel:not(.on) { display:none; }
 
-  /* ── REFERENCES ── */
-  .ref-list { list-style: none; }
-  .ref-list li {
-    font-size: .82rem;
-    font-family: var(--mono);
-    color: var(--text-dim);
-    padding: .5rem 0;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 1rem;
-  }
-  .ref-list li:last-child { border-bottom: none; }
-  .ref-num {
-    color: var(--accent);
-    min-width: 2rem;
-    font-size: .7rem;
-  }
-  .ref-list a { color: var(--accent2); text-decoration: none; }
-  .ref-list a:hover { text-decoration: underline; }
+.iw-svg   { display:block; width:100%; background:var(--panel);
+            border:1px solid var(--border); border-bottom:none; }
+.iw-ctrl  { display:flex; flex-wrap:wrap; gap:1.4rem; padding:1.1rem 1.4rem;
+            background:rgba(245,240,232,.8); border:1px solid var(--border); border-top:none; border-bottom:none; }
+.iw-c     { display:flex; flex-direction:column; gap:.4rem; min-width:110px; flex:1; }
+.iw-cl    { font-family:var(--mono); font-size:.55rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); }
+.iw-cv    { font-family:var(--mono); font-size:.68rem; color:var(--gold); }
+input[type=range] { -webkit-appearance:none; width:100%; height:2px; background:var(--border); cursor:pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:13px; height:13px;
+  background:var(--gold); border-radius:50%; box-shadow:0 0 5px rgba(138,106,26,.4); }
+input[type=range]::-moz-range-thumb { width:13px; height:13px; background:var(--gold); border-radius:50%; border:none; }
+.iw-desc  { font-style:italic; font-size:.84rem; color:var(--text-soft); background:rgba(255,252,245,.9);
+            padding:.9rem 1.4rem; border:1px solid var(--border); border-top:none; line-height:1.6; }
 
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    background: var(--bg2);
-    padding: 2rem;
-    font-family: var(--mono);
-    font-size: .7rem;
-    color: var(--text-dim);
-    text-align: center;
-    line-height: 2;
-  }
-  footer a { color: var(--accent); text-decoration: none; }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .animate-in {
-    opacity: 0;
-    animation: fadeUp .6s ease forwards;
-  }
-
-  /* ── PRINT ── */
-  @media print {
-    body::before, nav { display: none; }
-    main { grid-template-columns: 1fr; }
-    aside { display: none; }
-  }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════
-     HEADER
-═══════════════════════════════════════════════ -->
-<header>
-  <div class="hero-grid">
-    <div>
-      <div class="journal-label">
-        Cybersecurity Research · IMRaD Publication · 2026
-      </div>
-      <h1 class="title">
-        Enforced Tunnel<br>
-        <span>Architecture</span>
-      </h1>
-      <p class="subtitle">
-        Wielowarstwowy system ochrony sieci dla urządzeń końcowych —
-        architektura, implementacja i weryfikacja bezpieczeństwa pod Kali Linux
-      </p>
+<div id="bar"></div>
+<nav class="sidenav" id="sn"></nav>
 
-      <div class="meta-block">
-        <div class="meta-row">
-          <span class="meta-label">Autor</span>
-          <span class="meta-value">Paweł Majsterek</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-label">Afiliacja</span>
-          <span class="meta-value">Niezależny badacz, Piaseczno, Polska</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-label">Data</span>
-          <span class="meta-value">5 marca 2026</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-label">Platforma</span>
-          <span class="meta-value">Kali Linux 2024.x · x86_64</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-label">Repozytorium</span>
-          <span class="meta-value">
-            <a href="https://github.com" target="_blank"> https://pawcio99.github.io/ETA_SECURITY/#scripts </a>
-          </span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-label">Licencja</span>
-          <span class="meta-value">MIT · open-source</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- SCORE CARD -->
-    <div>
-      <div class="score-card" id="scoreCard">
-        <div class="score-card-title">Wynik audytu bezpieczeństwa · 2026-03-05</div>
-        <div class="score-number">86<span style="font-size:1.2rem;color:var(--text-dim)">/88</span></div>
-        <div class="score-grade">A — DOSKONAŁY</div>
-        <div style="color:var(--text-dim);font-size:.65rem;margin-bottom:1.2rem">0 błędów krytycznych · 0 FAIL · 1 WARN · 1 SKIP</div>
-        <div class="score-bar-wrap">
-          <div class="score-bar-label"><span>DNS Stack (18 testów)</span><span>100%</span></div>
-          <div class="score-bar"><div class="score-bar-fill" data-w="100"></div></div>
-        </div>
-        <div class="score-bar-wrap">
-          <div class="score-bar-label"><span>DNSSEC Validation</span><span>100%</span></div>
-          <div class="score-bar"><div class="score-bar-fill" data-w="100"></div></div>
-        </div>
-        <div class="score-bar-wrap">
-          <div class="score-bar-label"><span>Kill-Switch nftables</span><span>100%</span></div>
-          <div class="score-bar"><div class="score-bar-fill" data-w="100"></div></div>
-        </div>
-        <div class="score-bar-wrap">
-          <div class="score-bar-label"><span>WireGuard VPN</span><span>100%</span></div>
-          <div class="score-bar"><div class="score-bar-fill" data-w="100"></div></div>
-        </div>
-        <div class="score-bar-wrap">
-          <div class="score-bar-label"><span>IPv6 Isolation</span><span>100%</span></div>
-          <div class="score-bar"><div class="score-bar-fill" data-w="100"></div></div>
-        </div>
-        <div class="score-bar-wrap">
-          <div class="score-bar-label"><span>Sysctl Hardening</span><span>100%</span></div>
-          <div class="score-bar"><div class="score-bar-fill" data-w="100"></div></div>
-        </div>
-        <div class="score-bar-wrap">
-          <div class="score-bar-label"><span>VM Isolation (Etap 3)</span><span>— SKIP</span></div>
-          <div class="score-bar"><div class="score-bar-fill warn" data-w="0"></div></div>
-        </div>
-      </div>
-    </div>
+<header class="hero" id="top">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <p class="hero-eyebrow">Esej naukowy · Marzec 2026</p>
+  <h1>YHWH<br>i <em>Entropia</em></h1>
+  <p class="hero-sub">O stawaniu się rzeczywistości — od geometrii przestrzeni fazowej do świadomości jako struktury dysypatywnej</p>
+  <div class="hero-katex">
+    $S = k_B \ln \Omega \quad\cdot\quad \Delta x \cdot \Delta p \geq \dfrac{\hbar}{2} \quad\cdot\quad \frac{1}{\lambda} = R_H \!\left(\frac{1}{n_1^2} - \frac{1}{n_2^2}\right)$
   </div>
+  <div class="hero-scroll">Przewijaj<div class="hero-scroll-line"></div></div>
 </header>
 
-<!-- ═══════════════════════════════════════════════
-     NAV
-═══════════════════════════════════════════════ -->
-<nav>
-  <div class="nav-inner">
-    <span class="nav-logo">ETA</span>
-    <a href="#abstract">Abstract</a>
-    <a href="#introduction">Introduction</a>
-    <a href="#methods">Methods</a>
-    <a href="#results">Results</a>
-    <a href="#discussion">Discussion</a>
-    <a href="#discussion">ETA-Stealth</a>
-    <a href="#conclusion">Conclusion</a>
-    <a href="#gallery">Gallery</a>
-    <a href="#scripts">Scripts</a>
-    <a href="#references">References</a>
-  </div>
-</nav>
+<main class="main">
 
-<!-- ═══════════════════════════════════════════════
-     MAIN
-═══════════════════════════════════════════════ -->
-<main>
-  <!-- SIDEBAR TOC -->
-  <aside>
-    <div class="toc-title">Spis treści</div>
-    <ul class="toc-list" id="toc">
-      <li><a href="#abstract">Abstract</a></li>
-      <li><a href="#introduction">1. Wprowadzenie</a></li>
-      <li class="toc-sub"><a href="#intro-threat">1.1 Krajobraz zagrożeń</a></li>
-      <li class="toc-sub"><a href="#intro-gap">1.2 Luka w zabezpieczeniach</a></li>
-      <li><a href="#methods">2. Metody</a></li>
-      <li class="toc-sub"><a href="#methods-arch">2.1 Architektura</a></li>
-      <li class="toc-sub"><a href="#methods-dns">2.2 Stos DNS</a></li>
-      <li class="toc-sub"><a href="#methods-vpn">2.3 WireGuard + Kill-Switch</a></li>
-      <li class="toc-sub"><a href="#methods-vm">2.4 Izolacja VM</a></li>
-      <li><a href="#results">3. Wyniki</a></li>
-      <li class="toc-sub"><a href="#results-tests">3.1 Testy (86/88)</a></li>
-      <li class="toc-sub"><a href="#results-perf">3.2 Wydajność</a></li>
-      <li><a href="#discussion">4. Dyskusja</a></li>
-      <li class="toc-sub"><a href="#discussion">4.1 Fail-closed</a></li>
-      <li class="toc-sub"><a href="#discussion">4.2 Porównanie</a></li>
-      <li class="toc-sub"><a href="#discussion">4.3 ETA-Stealth 🛡</a></li>
-      <li><a href="#conclusion">5. Wnioski</a></li>
-      <li><a href="#gallery">Galeria (7 zdjęć)</a></li>
-      <li><a href="#scripts">Skrypty</a></li>
-      <li><a href="#references">Literatura</a></li>
-    </ul>
-  </aside>
+  <!-- §1 -->
+  <section class="essay-section" id="s1">
+    <div class="section-marker"><span class="section-marker-num">§ 01</span><div class="section-marker-line"></div></div>
+    <h2>YHWH jako ontologia processualna —<br><em>termodynamika nieequilibrium</em></h2>
+    <p>Imię Boga zapisywane w tradycji hebrajskiej jako YHWH bywa interpretowane jako forma czasownika „być" — lecz nie w jego klasycznym, statycznym sensie. Chodzi raczej o formę niedokonaną: „będę, który będę", „staję się, którym się staję". Rzeczywistość w tej perspektywie nie jest strukturą zamkniętą — jest dynamicznym polem przemian, procesualnością bez zatrzymania.</p>
+    <p>Ilya Prigogine, laureat Nagrody Nobla z chemii w roku 1977, odkrył coś, co rzuca na tę intuicję nieoczekiwane światło naukowe. Układy daleko od równowagi termodynamicznej nie tylko nie rozpadają się — one spontanicznie wytwarzają struktury o rosnącej złożoności. Prigogine nazwał je strukturami dysypatywnymi. Warunkiem ich istnienia jest stały przepływ energii przez układ — nie magazynowanie, lecz nieprzerwalny ruch.</p>
+    <div class="pq"><p>Komórka, płomień świecy, huragan — wszystkie są strukturami dysypatywnymi. Istnieją wyłącznie jako procesy. Zatrzymany huragan to nie spokojny huragan — to brak huraganu.</p></div>
+    <p>Jeśli byt istnieje wyłącznie przez nieustanny przepływ, to YHWH jako „hayah asher hayah" jest opisem tej samej zasady na poziomie fundamentalnym: rzeczywistości, która istnieje w akcie trwającego gradientu, nigdy jako zamknięty obiekt.</p>
+    <div class="fbox" data-label="Prigogine 1977">
+      $$\frac{dS}{dt} = \frac{d_i S}{dt} + \frac{d_e S}{dt} \geq 0$$
+      <span class="fcomment">Całkowita zmiana entropii układu otwartego = produkcja wewnętrzna + wymiana z otoczeniem. Tylko suma musi być nieujemna — lokalne obniżenie S jest możliwe przy wystarczającym gradiencie zewnętrznym.</span>
+    </div>
+    <p>Biblijna metafora „ciernia i ostu" nabiera w tej perspektywie precyzji fizycznej. Budowanie struktury to lokalne zmniejszenie $\Omega$ — liczby mikrostanów dostępnych układowi. Koszt musi być ponoszony gdzieś w otoczeniu. Cierpień i ostu nie są karą — są fizycznym rachunkiem za utrzymanie gradientu.</p>
+  </section>
 
-  <!-- ARTICLE -->
-  <article>
+  <div class="divider">· · ·</div>
 
-    <!-- ABSTRACT -->
-    <div class="section animate-in" id="abstract">
-      <div class="section-label">Abstract / Streszczenie</div>
-      <h2 class="section-title">Wielowarstwowa izolacja sieciowa punktów końcowych</h2>
+  <!-- §2 -->
+  <section class="essay-section" id="s2">
+    <div class="section-marker"><span class="section-marker-num">§ 02</span><div class="section-marker-line"></div></div>
+    <h2>Geometria przestrzeni fazowej —<br><em>czym naprawdę jest entropia</em></h2>
+    <p>Ludwig Boltzmann w roku 1877 zapisał na tablicy równanie, które kilkadziesiąt lat po jego śmierci zostanie wyryte na jego nagrobku w Wiedniu. Entropia $S$ jest iloczynem stałej Boltzmanna i logarytmu naturalnego z liczby $\Omega$ — liczby mikrostanów, przez które może być zrealizowany dany stan makroskopowy układu. To jest definicja kompletna i nie wymaga żadnego dodatku.</p>
+    <p>Entropia nie jest siłą. Nie jest dążnością. Nie jest kosmicznym wyrokiem ciągnącym rzeczy ku rozpadowi. Jest miarą statystyczną — opisem geometrii przestrzeni fazowej. Układ „zmierza ku większej entropii" wyłącznie dlatego, że stanów o wysokim $\Omega$ jest przytłaczająco więcej niż stanów o niskim $\Omega$. Jeśli system wędruje losowo po przestrzeni fazowej, prawie zawsze trafi w rejon gęsto zaludniony przez mikrostany — nie dlatego, że jakaś siła go tam ciągnie, lecz dlatego, że tam jest po prostu więcej miejsca.</p>
+    <div class="snote"><p>Mówienie o entropii jako „sile rozpadu" jest błędem kategorii. To tak, jakby powiedzieć, że kostka do gry „chce" wypaść na szóstkę najrzadziej. Kostka nie chce niczego — jest ich po prostu mniej możliwych kombinacji prowadzących do szóstki. Determinantem dynamiki jest gradient różnicy potencjałów, nie entropia jako aktywny aktor.</p></div>
+    <div class="fbox" data-label="Boltzmann 1877">
+      $$S = k_B \ln \Omega \qquad k_B = 1{,}38 \times 10^{-23}\ \frac{\text{J}}{\text{K}}$$
+      <span class="fcomment">$\Omega$ — liczba mikrostanów odpowiadających danemu stanowi makroskopowemu. Entropia rośnie, bo stanów o wysokim $\Omega$ jest statystycznie więcej — geometria przestrzeni fazowej, nie siła.</span>
+    </div>
+  </section>
 
-      <div class="abstract-box">
-        <div class="abstract-label">Abstract (EN)</div>
-        <p>
-          This paper presents the Enforced Tunnel Architecture (ETA) — a multi-layer network security
-          system designed for endpoint devices operating in untrusted network environments. ETA integrates
-          WireGuard VPN with a fail-closed nftables kill-switch, a cryptographically validated DNS stack
-          (Unbound + DNSSEC + dnscrypt-proxy/DoH), kernel-level IPv6 suppression, and optional application
-          isolation via QEMU/KVM. The complete system was implemented and verified on Kali Linux 2024.x.
-          An automated 88-test security audit yielded a score of 86/88 PASS (grade A — Excellent) with
-          zero critical failures and zero FAIL results. One WARN pertains to browser applications running
-          on the host rather than inside the isolated VM. Results confirm that ETA eliminates all tested
-          attack vectors: DNS leakage, VPN bypass, IPv6 tunnel bypass, and passive traffic interception.
-          The paper additionally presents ETA-Stealth — an extended configuration integrating ProtonVPN
-          Stealth protocol (TLS obfuscation over TCP 443) that conceals the VPN node from Deep Packet
-          Inspection (DPI) and network-level censorship. The architecture is fully open-source and
-          reproducible.
-        </p>
-      </div>
+  <div class="divider">· · ·</div>
 
-      <div class="abstract-box" style="border-left-color:var(--accent2)">
-        <div class="abstract-label" style="color:var(--accent2)">Streszczenie (PL)</div>
-        <p>
-          Artykuł opisuje Enforced Tunnel Architecture (ETA) — wielowarstwowy system bezpieczeństwa sieci
-          dla urządzeń końcowych pracujących w niezaufanych środowiskach sieciowych. ETA integruje VPN
-          WireGuard z kill-switchem nftables działającym według zasady fail-closed, kryptograficznie
-          uwierzytelnionym stosem DNS (Unbound + DNSSEC + dnscrypt-proxy/DoH), wyłączeniem IPv6 na
-          poziomie jądra oraz opcjonalną izolacją aplikacji przez QEMU/KVM. System zaimplementowano
-          i zweryfikowano na Kali Linux 2024.x. Automatyczny audyt 88 testów bezpieczeństwa dał wynik
-          <strong>86/88 PASS (ocena A — Doskonały)</strong> przy zerowej liczbie błędów krytycznych i
-          zerowej liczbie wyników FAIL. Artykuł prezentuje ponadto rozszerzenie <strong>ETA-Stealth</strong>:
-          integrację protokołu Stealth ProtonVPN (obfuskacja TLS przez TCP 443), która ukrywa węzeł VPN
-          przed głęboką inspekcją pakietów (DPI) i cenzurą sieciową.
-        </p>
-      </div>
+  <!-- §3 -->
+  <section class="essay-section" id="s3">
+    <div class="section-marker"><span class="section-marker-num">§ 03</span><div class="section-marker-line"></div></div>
+    <h2>Zasada nieoznaczoności<br>jako <em>fundament struktury</em></h2>
+    <p>Elektrony w atomach nie zajmują sztywnych orbit w sensie klasycznym — są opisane przez rozkłady prawdopodobieństwa wynikające z mechaniki kwantowej. Ale tekst, który zatrzymuje się na tej obserwacji, zatrzymuje się o krok za wcześnie. Kluczowe pytanie brzmi: dlaczego elektron nie „spada" na najniższy możliwy poziom energetyczny i nie osiąga klasycznej równowagi przy zerowej energii kinetycznej?</p>
+    <p>Odpowiedź daje zasada nieoznaczoności Heisenberga. Zerowa energia kinetyczna wymagałaby nieskończonej precyzji lokalizacji elektronu — co narusza zasadę nieoznaczoności. Atom wodoru w stanie podstawowym nie może mieć niższej energii nie dlatego, że jakaś siła go trzyma — dlatego, że wymagałoby to sprecyzowania zarówno położenia jak i pędu poniżej granicy dozwolonej przez strukturę przestrzeni fazowej kwantowej.</p>
+    <div class="pq"><p>Porządek na poziomie atomowym jest wbudowany w geometrię przestrzeni fazowej przez zasadę nieoznaczoności — nie przez zewnętrzną interwencję. Pewne stany są strukturalnie wykluczone z przestrzeni możliwości.</p></div>
+    <div class="fbox" data-label="Heisenberg 1927">
+      $$\Delta x \cdot \Delta p \geq \frac{\hbar}{2} \qquad \Delta E \cdot \Delta t \geq \frac{\hbar}{2}$$
+      <span class="fcomment">Zasada nieoznaczoności nie jest ograniczeniem pomiaru — jest fundamentalną własnością przestrzeni fazowej kwantowej. Stan o zerowej niepewności pędu i położenia jest strukturalnie niemożliwy.</span>
+    </div>
+  </section>
 
-      <div class="keywords">
-        <span class="kw-label">Słowa kluczowe:</span>
-        <span class="kw">WireGuard</span>
-        <span class="kw">DNS-over-HTTPS</span>
-        <span class="kw">DNSSEC</span>
-        <span class="kw">kill-switch</span>
-        <span class="kw">nftables</span>
-        <span class="kw">Kali Linux</span>
-        <span class="kw">VPN leak</span>
-        <span class="kw">network privacy</span>
-        <span class="kw">QEMU/KVM</span>
-        <span class="kw">fail-closed</span>
-      </div>
+  <div class="divider">· · ·</div>
+
+  <!-- §4 -->
+  <section class="essay-section" id="s4">
+    <div class="section-marker"><span class="section-marker-num">§ 04</span><div class="section-marker-line"></div></div>
+    <h2>Widma jako podpis gradientu —<br><em>tożsamość jest różnicą potencjałów</em></h2>
+    <p>Każdy pierwiastek posiada charakterystyczne widmo emisyjne i absorpcyjne. Gdy elektron w atomie wodoru przeskakuje z poziomu $n=3$ na $n=2$, emituje foton o długości fali 656 nanometrów — czerwona linia $H_\alpha$, widoczna w widmie każdej gwiazdy zawierającej wodór, niezależnie od odległości. Wodór w odległości miliarda lat świetlnych ma dokładnie te same linie spektralne co wodór w laboratorium.</p>
+    <p>Jest tu ukryty wniosek epistemologiczny, który spektroskopia ujawnia z matematyczną precyzją: tożsamość pierwiastka jest opisywana przez jego charakterystyczne gradienty energetyczne — przez wzorzec skoków między poziomami kwantowymi, nie przez jego masę czy objętość. To, czym coś jest, wyraża się przez to, jak i gdzie przenosi energię.</p>
+    <div class="snote"><p>Spektroskopia jest dosłownie czytaniem gradientu. Emitowany foton ma energię równą różnicy poziomów energetycznych: $E = h\nu = E_{n_2} - E_{n_1}$. Widmo emisyjne to zapis wszystkich możliwych gradientów danego układu kwantowego — jego „podpis fazowy".</p></div>
+    <div class="fbox" data-label="Bohr 1913 / Rydberg">
+      $$\frac{1}{\lambda} = R_H \cdot Z^2 \left(\frac{1}{n_1^2} - \frac{1}{n_2^2}\right) \qquad R_H = 1{,}097 \times 10^{7}\ \text{m}^{-1}$$
+      <span class="fcomment">Każda linia spektralna jest zapisem gradientu energetycznego między dwoma stanami kwantowymi. Tożsamość pierwiastka jest unikalnym wzorcem tych gradientów.</span>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- §5 -->
+  <section class="essay-section" id="s5">
+    <div class="section-marker"><span class="section-marker-num">§ 05</span><div class="section-marker-line"></div></div>
+    <h2>Entropia informacyjna —<br><em>Landauer i fizyczność wiedzy</em></h2>
+    <p>W roku 1948 Claude Shannon opublikował matematyczną teorię komunikacji. Miara niepewności, którą zaproponował dla źródła informacji, miała identyczną formę matematyczną co entropia termodynamiczna Boltzmanna. Shannon zapytany, dlaczego używa słowa „entropia" dla pojęcia informacyjnego, miał odpowiedzieć, że wzór jest ten sam, a nikt nie wie czym naprawdę jest entropia — więc w każdej debacie będzie miał przewagę. Żart zawierał głębszą prawdę niż się wydawało.</p>
+    <p>Rolf Landauer w roku 1961 pokazał, że ta zbieżność nie jest przypadkowa ani metaforyczna. Skasowanie jednego bitu informacji generuje co najmniej $k_B T \ln 2$ ciepła. Informacja jest fizyczna. Gradient informacyjny ma swój koszt energetyczny, którego nie można obejść żadnym sprytnym algorytmem.</p>
+    <div class="pq"><p>Propaganda nie jest tylko moralnym złem — jest termodynamicznym marnotrawstwem. Niszczy gradient informacyjny, który umożliwia efektywną koordynację układów złożonych, i zastępuje go gradientem sztucznym, którego koszt utrzymania jest wielokrotnie wyższy.</p></div>
+    <div class="fbox" data-label="Shannon 1948 / Landauer 1961">
+      $$H = -\sum_i p_i \log_2 p_i \qquad E_{\min} = k_B T \ln 2 \approx 2{,}87 \times 10^{-21}\ \text{J}\ \text{przy}\ 300\,\text{K}$$
+      <span class="fcomment">Kasowanie informacji ma nieusuwalne koszty fizyczne — informacja i entropia termodynamiczna są dwoma aspektami tej samej rzeczywistości.</span>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- §6 -->
+  <section class="essay-section" id="s6">
+    <div class="section-marker"><span class="section-marker-num">§ 06</span><div class="section-marker-line"></div></div>
+    <h2>Świadomość jako<br><em>modulator przestrzeni fazowej</em></h2>
+    <p>Metafora świadomości jako „lokalnego wiru porządku w rzece rosnącej entropii" jest piękna i precyzyjna — ale nie wyczerpuje jej fizycznej osobliwości. Wir w rzece jest strukturą dysypatywną: istnieje kosztem przepływu rzeki, ale jednocześnie organizuje ten przepływ, tworzy lokalne gradienty ciśnienia i wpływa na inne wiry. Jest zarówno kosztem gradientu rzeki, jak i aktorem modyfikującym gradient dla innych.</p>
+    <p>Świadomość — jeśli potraktować ją poważnie jako strukturę dysypatywną mózgu — nie jest biernym obserwatorem gradientu entropii. Jest aktywnym modulatorem przestrzeni fazowej: przez wybory, przez uwagę, przez budowanie struktur informacyjnych, zmienia topografię gradientów dostępnych innym układom. Nauczyciel zmienia gradient przestrzeni poznawczej uczniów. Instytucja zaufania obniża koszt termodynamiczny koordynacji zbiorowej.</p>
+    <div class="snote"><p>Mózg ludzki zużywa około 20 watów przy masie stanowiącej 2% masy ciała. Jest strukturą dysypatywną o wyjątkowo wysokiej gęstości przepływu energii — co zgodnie z teorią Prigogine'a odpowiada możliwości utrzymywania wyjątkowo złożonych struktur stacjonarnych. Świadomość jest termodynamicznie kosztowna, bo jest termodynamicznie złożona.</p></div>
+    <p>Świadomość jest jedynym układem dysypatywnym, który może świadomie projektować własne warunki brzegowe. To jest fizyczny opis wolności: nie brak determinizmu, lecz zdolność do rekonfiguracji własnej przestrzeni fazowej przez wewnętrzny akt wyboru kierunku gradientu.</p>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- §7 -->
+  <section class="essay-section" id="s7">
+    <div class="section-marker"><span class="section-marker-num">§ 07</span><div class="section-marker-line"></div></div>
+    <h2>Kosmiczny gradient —<br><em>strzałka czasu i jej źródło</em></h2>
+    <p>Strzałka czasu — asymetria między przeszłością a przyszłością — ma swoje źródło w niezwykle niskiej entropii Wszechświata tuż po Wielkim Wybuchu. Roger Penrose szacował, że prawdopodobieństwo wylosowania stanu o tak niskim $\Omega$ jak stan zaraz po Wielkim Wybuchu wynosi $1$ do $10^{10^{123}}$. Liczba ta przekracza liczbę cząstek w obserwowalnym Wszechświecie o dziesiątki rzędów wielkości.</p>
+    <p>Słońce nie jest źródłem energii w sensie absolutnym. Jest pośrednikiem między niską entropią jądrową a wysoką entropią promieniowania podczerwonego emitowanego przez Ziemię w przestrzeń kosmiczną. Życie na Ziemi istnieje w tym gradiencie jak turbina w strumieniu wody — przetwarzając różnicę potencjałów między gorącym Słońcem a zimną przestrzenią kosmiczną w lokalne struktury stacjonarne o rosnącej złożoności.</p>
+    <div class="pq"><p>Cały gradient, który napędza wszystkie procesy — gwiazdy, życie, świadomość — jest rozładowywaniem pierwotnej asymetrii Wielkiego Wybuchu. Jesteśmy echem tamtego niskiego $\Omega$, rozbrzmiewającym przez 13,8 miliarda lat.</p></div>
+    <p>Fizyk Eric Schneider sformułował to prowokacyjnie: życie nie walczy z entropią — życie przyspiesza jej globalny wzrost przez budowanie lokalnych struktur dysypatywnych o rosnącej wydajności rozpraszania. Człowiek budujący kulturę i instytucje nie jest anomalią w kosmosie — jest jego najbardziej zaawansowanym narzędziem realizacji gradientu.</p>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  
+
+  <div class="interactive-wrap" id="viz">
+    <div class="interactive-header">
+      <span class="interactive-title">Wizualizacje interaktywne</span>
+      <span class="interactive-subtitle">Modyfikuj parametry — obserwuj mechanizm</span>
     </div>
 
-    <!-- INTRODUCTION -->
-    <div class="section animate-in" id="introduction" style="animation-delay:.1s">
-      <div class="section-label">Section 01</div>
-      <h2 class="section-title">Wprowadzenie</h2>
-
-      <p>
-        Współczesne środowiska pracy — zdalna, hybrydowa, mobilna — wymagają od urządzeń końcowych
-        łączności z zasobami firmowymi za pośrednictwem sieci, nad którymi organizacja nie sprawuje
-        żadnej kontroli. Hotele, lotniska, kawiarnie i sieci klientów stanowią środowisko aktywnie
-        wrogie dla niezabezpieczonych połączeń.
-      </p>
-
-      <p>
-        Tradycyjne rozwiązania ochrony punktów końcowych — oprogramowanie antywirusowe, zapora
-        systemowa, protokół HTTPS — adresują wyłącznie zagrożenia zlokalizowane na urządzeniu lub
-        w warstwie aplikacyjnej. Nie chronią one warstwy sieciowej, przez którą dane fizycznie
-        przepływają między urządzeniem a siecią zewnętrzną.
-      </p>
-
-      <h3 id="intro-threat">1.1 Krajobraz zagrożeń w sieciach zewnętrznych</h3>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Technika ataku</th>
-              <th>Wektor</th>
-              <th>Konsekwencja</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Man-in-the-Middle (Evil Twin AP)</td><td>Warstwa 2 / L2</td><td>Przechwycenie sesji, kradzież danych logowania</td></tr>
-            <tr><td>DNS Spoofing / Cache Poisoning</td><td>Warstwa 7 / DNS</td><td>Przekierowanie na serwery phishingowe</td></tr>
-            <tr><td>SSL Stripping</td><td>Warstwa 7 / HTTPS</td><td>Komunikacja w postaci jawnego tekstu</td></tr>
-            <tr><td>ARP Poisoning</td><td>Warstwa 2 / ARP</td><td>Pełny wgląd w niezaszyfrowany ruch</td></tr>
-            <tr><td>Rogue DHCP</td><td>Warstwa 3 / DHCP</td><td>Przejęcie kontroli nad DNS i bramą domyślną</td></tr>
-            <tr><td>IPv6 Tunnel Bypass</td><td>Warstwa 3 / IPv6</td><td>Ruch omijający tunel VPN przez kanał IPv6</td></tr>
-            <tr><td>VPN Reconnect Leak</td><td>Warstwa 3 / routing</td><td>Chwilowy wyciek przy przełączeniu sieci</td></tr>
-            <tr><td>WebRTC IP Disclosure</td><td>Warstwa 7 / przeglądarka</td><td>Ujawnienie prawdziwego adresu IP przez API przeglądarki</td></tr>
-          </tbody>
-          <caption>Tabela 1. Wektory ataków aktywnych w niezaufanych sieciach bezprzewodowych</caption>
-        </table>
-      </div>
-
-      <h3 id="intro-gap">1.2 Zidentyfikowana luka w istniejących rozwiązaniach</h3>
-
-      <p>
-        Analiza dostępnych produktów komercyjnych wykazuje, że żadne z nich nie implementuje pełnego
-        zestawu warstw ochrony w formie zintegrowanej i weryfikowalnej architektury. Typowy korporacyjny
-        klient VPN oferuje szyfrowany tunel, lecz pomija ochronę DNS, zarządzanie IPv6 oraz
-        gwarantowane zachowanie fail-closed przy utracie połączenia.
-      </p>
-
-      <div class="alert info">
-        <span class="alert-icon">ℹ</span>
-        <p><strong>Hipoteza badawcza:</strong> Możliwe jest zbudowanie wielowarstwowej architektury
-        bezpieczeństwa sieci wyłącznie z komponentów open-source, która eliminuje wszystkie
-        zidentyfikowane wektory wycieku danych w środowisku niezaufanej sieci zewnętrznej.</p>
-      </div>
+    <div class="iw-tabs">
+      <button class="iw-tab on"  data-p="p1">Przestrzeń fazowa</button>
+      <button class="iw-tab"     data-p="p2">Gradient &amp; Fala</button>
+      <button class="iw-tab"     data-p="p3">Widmo kwantowe</button>
+      <button class="iw-tab"     data-p="p4">Entropia inf.</button>
+      <button class="iw-tab"     data-p="p5">Skala temperatur</button>
     </div>
 
-    <!-- METHODS -->
-    <div class="section animate-in" id="methods" style="animation-delay:.15s">
-      <div class="section-label">Section 02</div>
-      <h2 class="section-title">Metody i implementacja</h2>
+    <div class="iw-stack">
 
-      <h3 id="methods-arch">2.1 Architektura warstwowa ETA</h3>
-
-      <p>
-        ETA definiuje pięć niezależnych warstw ochrony, z których każda eliminuje odrębną klasę
-        zagrożeń. Warstwy są wzajemnie wzmacniające — kompromitacja jednej z nich nie powoduje
-        naruszenia pozostałych.
-      </p>
-
-      <div class="arch-diagram">
-<span class="arch-accent">┌─────────────────────────────────────────────────────┐</span>
-<span class="arch-accent">│           WARSTWA 5 — IZOLACJA APLIKACJI             │</span>
-<span class="arch-accent">│         LibreWolf / Firefox w QEMU/KVM VM            │</span>
-<span class="arch-accent">└────────────────────┬────────────────────────────────┘</span>
-                     │ tap0 (10.0.3.x)
-<span class="arch-accent2">┌────────────────────▼────────────────────────────────┐</span>
-<span class="arch-accent2">│           WARSTWA 4 — DNS (host)                     │</span>
-<span class="arch-accent2">│  Aplikacja → Unbound :53 → dnscrypt-proxy :5053      │</span>
-<span class="arch-accent2">│                    → DoH (Quad9) przez wg0           │</span>
-<span class="arch-accent2">└────────────────────┬────────────────────────────────┘</span>
-                     │ wg0 (WireGuard)
-<span style="color:#f0c040">┌────────────────────▼────────────────────────────────┐</span>
-<span style="color:#f0c040">│           WARSTWA 3 — VPN FULL-TUNNEL                │</span>
-<span style="color:#f0c040">│     WireGuard · ChaCha20-Poly1305 · Curve25519       │</span>
-<span style="color:#f0c040">└────────────────────┬────────────────────────────────┘</span>
-                     │ eth0 / wlan0
-<span class="arch-warn">┌────────────────────▼────────────────────────────────┐</span>
-<span class="arch-warn">│           WARSTWA 2 — KILL-SWITCH                    │</span>
-<span class="arch-warn">│  nftables OUTPUT:drop · Before=network-pre.target    │</span>
-<span class="arch-warn">└────────────────────┬────────────────────────────────┘</span>
-                     │ kernel
-<span style="color:#c084fc">┌────────────────────▼────────────────────────────────┐</span>
-<span style="color:#c084fc">│           WARSTWA 1 — KERNEL HARDENING               │</span>
-<span style="color:#c084fc">│  IPv6 off · rp_filter · no ICMP redirect · sysctl    │</span>
-<span style="color:#c084fc">└─────────────────────────────────────────────────────┘</span>
-      </div>
-
-      <h3 id="methods-dns">2.2 Implementacja stosu DNS</h3>
-
-      <p>
-        Stos DNS składa się z trzech komponentów działających jako łańcuch kryptograficznego
-        uwierzytelnienia. Systemowa usługa <code>systemd-resolved</code> jest zatrzymana i
-        zamaskowana. Plik <code>/etc/resolv.conf</code> jest zastępowany statycznym wpisem
-        wskazującym na <code>127.0.0.1</code>.
-      </p>
-
-      <pre>
-# /etc/resolv.conf — statyczny, chroniony przez tmpfiles.d
-nameserver 127.0.0.1
-options edns0 trust-ad
-
-# Unbound nasłuchuje na 127.0.0.1:53 i 10.0.3.1:53
-# Zapytania upstream → dnscrypt-proxy na 127.0.0.1:5053
-# dnscrypt-proxy → DoH przez wg0 (szyfrowany tunel)
-
-# Test walidacji DNSSEC (musi zwrócić SERVFAIL):
-$ dig @127.0.0.1 dnssec-failed.org A
-;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL</pre>
-
-      <p>
-        Kluczowe parametry konfiguracji Unbound: <code>val-permissive-mode: no</code> (twarda
-        walidacja DNSSEC — brak odpowiedzi zamiast sfałszowanego wyniku),
-        <code>qname-minimisation: yes</code> (RFC 7816) oraz <code>do-not-query-localhost: no</code>
-        (zezwolenie na zapytania do dnscrypt-proxy na loopback).
-      </p>
-
-      <h3 id="methods-vpn">2.3 WireGuard i kill-switch nftables</h3>
-
-      <p>
-        Kill-switch jest ładowany jako usługa systemd z dyrektywą
-        <code>Before=network-pre.target</code>, co gwarantuje aktywność reguł firewall
-        <em>przed</em> konfiguracją interfejsów sieciowych przez kernel. Polityka domyślna
-        <code>OUTPUT: drop</code> blokuje każdy pakiet wychodzący, z wyjątkiem:
-      </p>
-
-      <pre>
-table inet filter {
-  chain output {
-    type filter hook output priority 0; policy drop;
-
-    # loopback — komunikacja między usługami lokalnymi
-    oifname "lo"   accept
-
-    # jedyny dozwolony ruch przez interfejs fizyczny:
-    # handshake WireGuard (UDP → IP endpointu VPN)
-    oifname "eth0" ip daddr $VPN_ENDPOINT udp dport $WG_PORT accept
-
-    # ruch przez tunel VPN
-    oifname "wg0"  accept
-
-    # ruch z/do maszyny wirtualnej przez TAP
-    oifname "tap0" accept
-    iifname "tap0" oifname "wg0" accept
-  }
-}</pre>
-
-      <h3 id="methods-vm">2.4 Izolacja aplikacji w QEMU/KVM</h3>
-
-      <p>
-        Opcjonalna warstwa izolacji uruchamia przeglądarkę LibreWolf w maszynie wirtualnej
-        Debian 12 z dostępem do sieci wyłącznie przez interfejs TAP połączony z hostem.
-        Maszyna wirtualna nie ma dostępu do klucza WireGuard, konfiguracji hosta ani
-        lokalnego systemu plików. Kompromitacja przeglądarki jest ograniczona do środowiska VM.
-      </p>
-
-      <div class="alert success">
-        <span class="alert-icon">✓</span>
-        <p>Konfiguracja cloud-init wstrzykuje wyłącznie klucz SSH i statyczną konfigurację
-        sieciową. Wewnętrzny adres VM (10.0.3.2) nie jest eksponowany na zewnątrz dzięki
-        masqueradingowi na interfejsie wg0.</p>
-      </div>
-    </div>
-
-    <!-- RESULTS -->
-    <div class="section animate-in" id="results" style="animation-delay:.2s">
-      <div class="section-label">Section 03</div>
-      <h2 class="section-title">Wyniki</h2>
-
-      <h3 id="results-tests">3.1 Wyniki automatycznych testów bezpieczeństwa</h3>
-
-      <p>
-        Skrypt weryfikacyjny <code>eta_security_test.sh</code> przeprowadził 88 testów
-        pokrywających wszystkie warstwy architektury. Testy uruchomiono na Kali Linux 2024.x,
-        x86_64, z aktywnym połączeniem WireGuard przez ProtonVPN.
-      </p>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Moduł testowy</th><th>Wynik</th><th>PASS</th><th>FAIL/WARN/SKIP</th><th>Status</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>M1 — Izolacja DNS i wycieki</td><td>15/15</td><td>15</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
-            <tr><td>M2 — Kill-switch nftables (fail-closed)</td><td>8/8</td><td>8</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
-            <tr><td>M3 — WireGuard VPN</td><td>7/7</td><td>7</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
-            <tr><td>M4 — Izolacja IPv6</td><td>5/5</td><td>5</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
-            <tr><td>M5 — Weryfikacja stosu DNS</td><td>11/11</td><td>11</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
-            <tr><td>M6 — Sysctl hardening sieci</td><td>7/7</td><td>7</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
-            <tr><td>M7 — Procesy i usługi systemd</td><td>12/12</td><td>12</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
-            <tr><td>M8 — Integralność konfiguracji</td><td>8/8</td><td>8</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
-            <tr><td>M9 — Izolacja VM (Etap 3)</td><td>SKIP</td><td>—</td><td>1 SKIP</td><td style="color:var(--text-dim)">— SKIP</td></tr>
-            <tr><td>M10 — Sieciowe testy wycieków</td><td>6/7</td><td>6</td><td>1 WARN*</td><td style="color:#f0c040">⚠ WARN</td></tr>
-            <tr><td>M11 — Kolejność boot</td><td>4/4</td><td>4</td><td>0</td><td style="color:var(--accent)">✓ PASS</td></tr>
-            <tr><td><strong>ŁĄCZNIE</strong></td><td><strong>86/88</strong></td><td><strong>86</strong></td><td><strong>1W · 1S</strong></td><td style="color:var(--accent)"><strong>A — DOSKONAŁY</strong></td></tr>
-          </tbody>
-          <caption>Tabela 2. Wyniki audytu automatycznego — 88 testów bezpieczeństwa · Kali Linux 2024.x · 2026-03-05 22:52</caption>
-        </table>
-      </div>
-
-      <div class="alert warn">
-        <span class="alert-icon">⚠</span>
-        <p><strong>1 WARN — M10:</strong> Aplikacje użytkownika (Chromium) działają na hoście zamiast
-        w izolowanej VM (Etap 3 nieaktywny podczas testu). Zgodnie z modelem ETA przeglądarka powinna
-        działać wyłącznie w środowisku QEMU/KVM przez interfejs tap0. Po aktywacji Etapu 3 ostrzeżenie
-        znika — wynik wzrośnie do 87/88.</p>
-      </div>
-
-      <div class="alert success">
-        <span class="alert-icon">✓</span>
-        <p><strong>1 SKIP — M9:</strong> Moduł izolacji VM pominięty celowo (Etap 3 nieaktywny
-        podczas sesji testowej). Wszystkie pozostałe 87 aktywnych testów: PASS lub WARN
-        bez ani jednego FAIL.</p>
-      </div>
-
-      <h3 id="results-perf">3.2 Wpływ na wydajność sieci</h3>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Metryka</th><th>Bez ETA (baseline)</th><th>Z ETA (WireGuard)</th><th>Overhead</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Przepustowość pobierania</td><td>94.2 Mb/s</td><td>91.6 Mb/s</td><td>−2.8%</td></tr>
-            <tr><td>Przepustowość wysyłania</td><td>87.1 Mb/s</td><td>85.0 Mb/s</td><td>−2.4%</td></tr>
-            <tr><td>Latencja DNS (pierwsza odpowiedź)</td><td>8 ms</td><td>14 ms</td><td>+6 ms</td></tr>
-            <tr><td>Latencja DNS (z cache)</td><td>8 ms</td><td>0.4 ms</td><td>−7.6 ms</td></tr>
-            <tr><td>Czas handshake VPN (ponowne połączenie)</td><td>—</td><td>&lt;200 ms</td><td>—</td></tr>
-            <tr><td>Czas startu systemu (boot do sieci)</td><td>18 s</td><td>22 s</td><td>+4 s</td></tr>
-          </tbody>
-          <caption>Tabela 3. Pomiary wydajności — Kali Linux 2024.x, łącze 100 Mb/s symetryczne</caption>
-        </table>
-      </div>
-
-      <p>
-        Overhead wydajnościowy WireGuard jest minimalny i praktycznie niezauważalny dla użytkownika.
-        Lokalny cache DNS Unbound redukuje latencję zapytań powtarzanych poniżej wartości bazowej,
-        co w praktycznych scenariuszach pracy oznacza <em>szybsze</em> przeglądanie stron
-        po rozgrzaniu cache niż bez ETA.
-      </p>
-    </div>
-
-    <!-- DISCUSSION -->
-    <div class="section animate-in" id="discussion" style="animation-delay:.25s">
-      <div class="section-label">Section 04</div>
-      <h2 class="section-title">Dyskusja</h2>
-
-      <h3>4.1 Zasada fail-closed jako fundamentalna gwarancja</h3>
-
-      <p>
-        Kluczową innowacją architektury ETA jest konsekwentna implementacja zasady fail-closed
-        na każdym poziomie stosu. Tradycyjne rozwiązania VPN domyślnie działają w trybie
-        fail-open — utrata połączenia powoduje automatyczne przełączenie na połączenie bezpośrednie.
-        W ETA utrata połączenia oznacza brak internetu, nie wyciek.
-      </p>
-
-      <div class="timeline">
-        <div class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-label">Boot — t=0s</div>
-          <div class="tl-title">Kill-switch aktywny PRZED siecią</div>
-          <div class="tl-desc">nftables-killswitch.service ładuje reguły z Before=network-pre.target. Interfejsy fizyczne jeszcze nie skonfigurowane.</div>
+      <!-- P1 Maxwell-Boltzmann -->
+      <div class="iw-panel on" id="p1">
+        <svg id="g1" class="iw-svg" height="320"></svg>
+        <div class="iw-ctrl">
+          <div class="iw-c"><span class="iw-cl">Temperatura T [K]</span>
+            <input type="range" id="r1T" min="100" max="2000" value="600">
+            <span class="iw-cv" id="d1T">600 K</span></div>
+          <div class="iw-c"><span class="iw-cl">Gradient G [%]</span>
+            <input type="range" id="r1G" min="0" max="100" value="0">
+            <span class="iw-cv" id="d1G">0 %</span></div>
         </div>
-        <div class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-label">Boot — t+2s</div>
-          <div class="tl-title">Konfiguracja interfejsów sieciowych</div>
-          <div class="tl-desc">network-pre.target, networkd. Każda próba połączenia jest blokowana przez OUTPUT:drop.</div>
+        <div class="iw-desc">Rozkład Maxwella-Boltzmanna prędkości cząstek gazu. Przy G=0 przestrzeń fazowa jest izotropowa. Gradient G polaryzuje rozkład — pewne prędkości stają się statystycznie uprzywilejowane.</div>
+      </div>
+
+      <!-- P2 Wave SOFAR -->
+      <div class="iw-panel" id="p2">
+        <svg id="g2" class="iw-svg" height="320"></svg>
+        <div class="iw-ctrl">
+          <div class="iw-c"><span class="iw-cl">Gradient ΔT</span>
+            <input type="range" id="r2T" min="0" max="100" value="40">
+            <span class="iw-cv" id="d2T">40</span></div>
+          <div class="iw-c"><span class="iw-cl">Tłumienie α</span>
+            <input type="range" id="r2a" min="0" max="80" value="20">
+            <span class="iw-cv" id="d2a">20</span></div>
+          <div class="iw-c"><span class="iw-cl">Częstość ω</span>
+            <input type="range" id="r2w" min="1" max="20" value="5">
+            <span class="iw-cv" id="d2w">5</span></div>
         </div>
-        <div class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-label">Boot — t+4s</div>
-          <div class="tl-title">WireGuard ustanawia tunel</div>
-          <div class="tl-desc"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1364743e62667a7078536474233d607661657a7076">[email&#160;protected]</a>. Po handshake ruch przez wg0 jest przepuszczany przez kill-switch.</div>
+        <div class="iw-desc">Propagacja fali w gradiencie ośrodka — model SOFAR. Gdy ΔT=0, fala rozprasza się izotropowo. Gradient chwyta falę w warstwie propagacyjnej.</div>
+      </div>
+
+      <!-- P3 Quantum spectrum -->
+      <div class="iw-panel" id="p3">
+        <svg id="g3" class="iw-svg" height="340"></svg>
+        <div class="iw-ctrl">
+          <div class="iw-c"><span class="iw-cl">Pierwiastek Z</span>
+            <input type="range" id="r3Z" min="1" max="8" value="1">
+            <span class="iw-cv" id="d3Z">H (Z=1)</span></div>
+          <div class="iw-c"><span class="iw-cl">Poziom n_max</span>
+            <input type="range" id="r3n" min="3" max="8" value="5">
+            <span class="iw-cv" id="d3n">n = 5</span></div>
+          <div class="iw-c"><span class="iw-cl">Seria emisji</span>
+            <input type="range" id="r3s" min="1" max="4" value="2">
+            <span class="iw-cv" id="d3s">Balmera</span></div>
         </div>
-        <div class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-label">Boot — t+6s</div>
-          <div class="tl-title">Unbound + dnscrypt-proxy aktywne</div>
-          <div class="tl-desc">DNS gotowy. System operacyjny w pełni sprawny. Całkowity czas od bootu do bezpiecznej sieci: ~22 sekundy.</div>
+        <div class="iw-desc">Widmo emisyjne pierwiastków — zapis gradientów energetycznych między poziomami kwantowymi. Każda linia to skok elektronu. Tożsamość pierwiastka wyraża się przez gradienty, nie przez masę.</div>
+      </div>
+
+      <!-- P4 Shannon entropy -->
+      <div class="iw-panel" id="p4">
+        <svg id="g4" class="iw-svg" height="320"></svg>
+        <div class="iw-ctrl">
+          <div class="iw-c"><span class="iw-cl">Wiarygodność p</span>
+            <input type="range" id="r4p" min="1" max="99" value="70">
+            <span class="iw-cv" id="d4p">70 %</span></div>
+          <div class="iw-c"><span class="iw-cl">Szum σ [%]</span>
+            <input type="range" id="r4s" min="0" max="100" value="20">
+            <span class="iw-cv" id="d4s">20 %</span></div>
+          <div class="iw-c"><span class="iw-cl">Temperatura T [K]</span>
+            <input type="range" id="r4T" min="100" max="1000" value="300">
+            <span class="iw-cv" id="d4T">300 K</span></div>
         </div>
+        <div class="iw-desc">Entropia informacyjna Shannona H(p) i koszt fizyczny Landauera E=kT·ln2 na bit. Szum podnosi H — każdy bit wymaga więcej energii fizycznej.</div>
       </div>
 
-      <h3>4.2 Porównanie z rozwiązaniami komercyjnymi</h3>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Funkcja</th><th>Typowy VPN korporacyjny</th><th>ETA (open-source)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Kill-switch fail-closed</td><td>Opcjonalny / często wyłączony</td><td style="color:var(--accent)">Wbudowany, ładuje się przed siecią</td></tr>
-            <tr><td>Ochrona DNS</td><td>Brak lub podstawowa</td><td style="color:var(--accent)">DNSSEC + DoH + lokalny resolver</td></tr>
-            <tr><td>Izolacja IPv6</td><td>Zależy od konfiguracji</td><td style="color:var(--accent)">Wyłączony systemowo przez sysctl</td></tr>
-            <tr><td>Weryfikowalność</td><td>Closed-source</td><td style="color:var(--accent)">Open-source, każdy komponent audytowalny</td></tr>
-            <tr><td>Izolacja przeglądarki</td><td>Brak</td><td style="color:var(--accent)">Opcjonalna VM (QEMU/KVM)</td></tr>
-            <tr><td>Kod VPN (powierzchnia ataku)</td><td>~100 000 linii (OpenVPN)</td><td style="color:var(--accent)">~4 000 linii (WireGuard)</td></tr>
-            <tr><td>Koszt</td><td>Licencja enterprise</td><td style="color:var(--accent)">Open-source + subskrypcja VPN (~6 EUR/mc)</td></tr>
-          </tbody>
-          <caption>Tabela 4. Porównanie ETA z typowym korporacyjnym klientem VPN</caption>
-        </table>
+      <!-- P5 Temperature scale -->
+      <div class="iw-panel" id="p5">
+        <svg id="g5" class="iw-svg" height="460"></svg>
+        <div class="iw-desc">Logarytmiczna skala temperatur — od 0,001 K do 15 milionów K. Oś obejmuje 10 rzędów wielkości. Każdy punkt to znaczący próg fizyczny lub astronomiczny.</div>
       </div>
 
-      <h3>4.3 ETA-Stealth — ukrycie węzła VPN przed DPI</h3>
+    </div><!-- /iw-stack -->
+  </div><!-- /viz -->
 
-      <p>
-        Standardowy ruch WireGuard jest rozpoznawalny przez techniki głębokiej inspekcji pakietów
-        (DPI — Deep Packet Inspection). Charakterystyczny nagłówek UDP protokołu WireGuard
-        oraz stały port (domyślnie 51820/UDP) umożliwiają klasyfikację i blokowanie ruchu przez
-        firewalle korporacyjne, systemy IDS/IPS, a także przez mechanizmy cenzury sieciowej
-        stosowane na poziomie ISP lub krajowej infrastruktury sieciowej.
-      </p>
 
-      <p>
-        <strong>ProtonVPN Stealth</strong> to protokół obfuskacji, który opakowuje ruch WireGuard
-        w strumień TLS przez TCP 443. Z perspektywy każdego urządzenia monitorującego sieć
-        połączenie wygląda identycznie jak zwykłe połączenie HTTPS do dowolnej strony internetowej.
-        Nie ma możliwości odróżnienia go od normalnego ruchu webowego bez klucza prywatnego.
-      </p>
+<section class="essay-section" id="s8">
+    <div class="section-marker"><span class="section-marker-num">§ 08</span><div class="section-marker-line"></div></div>
+    <h2>Coda: <em>gradient, który patrzy na siebie</em></h2>
+    <p>Materia, która z definicji statystycznej przebywa najczęściej w stanach o wysokim $\Omega$, potrafiła na pewien czas — przez 3,8 miliarda lat na tej jednej planecie — organizować się w struktury zdolne do refleksji nad własnym miejscem w tym procesie. To jest osobliwość, której żadna inna znana nam struktura dysypatywna nie osiągnęła.</p>
+    <p>YHWH jako „będę, który będę" — i Boltzmann jako $S = k_B \ln \Omega$ — opisują tę samą rzeczywistość z dwóch stron tej samej granicy. Jeden mówi językiem objawienia, drugi językiem równań. Oba mówią: rzeczywistość jest procesem, nie bytem. Tożsamość jest gradientem, nie substancją.</p>
+    <div class="pq"><p>Świadomość jest gradientem, który patrzy na siebie. I właśnie to czyni historię życia tak osobliwą w kosmicznej skali — nie rozmiar, lecz zdolność do refleksji nad własnym miejscem w rozładowywaniu pierwotnej asymetrii Wielkiego Wybuchu.</p></div>
+  </section>
 
-      <div class="arch-diagram">
-<span class="arch-accent">┌──────────────────────────────────────────────────────────────────┐</span>
-<span class="arch-accent">│                    ETA-STEALTH — przepływ ruchu                   │</span>
-<span class="arch-accent">└──────────────────────────────────────────────────────────────────┘</span>
-
-<span class="arch-accent2">Aplikacja (VM / host)</span>
-    │ dowolny protokół (TCP/UDP)
-    ▼
-<span class="arch-accent2">WireGuard (wg0)</span>  ←— szyfrowanie ChaCha20-Poly1305, tunelowanie
-    │ UDP wewnątrz TLS
-    ▼
-<span style="color:#f0c040">ProtonVPN Stealth Transport Layer</span>
-    │ obfuskacja: WireGuard UDP → strumień TLS
-    │ port: <span class="arch-accent">TCP 443</span> (nieodróżnialny od HTTPS)
-    ▼
-<span class="arch-warn">Sieć (hotel / lotnisko / ISP / firewall korporacyjny / DPI)</span>
-    │ "widzę: HTTPS do IP X" — brak możliwości identyfikacji VPN
-    ▼
-<span class="arch-accent">Serwer ProtonVPN (węzeł Stealth)</span>
-    │ deszyfracja TLS → deszyfracja WireGuard
-    ▼
-<span class="arch-accent2">Internet</span>
-
-<span class="arch-accent">──── Co widzi obserwator sieci ─────────────────────────────────────</span>
-  Standardowy WireGuard:  <span class="arch-warn">UDP:51820 → IP serwera ProtonVPN  [ROZPOZNAWALNY]</span>
-  ETA-Stealth:            <span class="arch-accent">TCP:443  → IP serwera (brak podpisu VPN) [NIEWIDOCZNY]</span>
-      </div>
-
-      <h3>4.3.1 Konfiguracja ProtonVPN Stealth na Kali Linux</h3>
-
-      <p>
-        ProtonVPN Stealth jest dostępny w planach Plus i Visionary. Wymaga użycia
-        oficjalnego klienta ProtonVPN dla Linux lub ręcznej konfiguracji przez dedykowany
-        plik <code>.ovpn</code> / <code>.conf</code> w trybie Stealth. Poniżej przedstawiono
-        konfigurację integrującą Stealth z architekturą ETA:
-      </p>
-
-      <pre>
-# Krok 1 — Pobierz konfigurację Stealth z protonvpn.com
-# Panel → Downloads → Linux → WireGuard → Stealth protocol
-# Lub: protonvpn-cli c --stealth (oficjalny klient)
-
-# Krok 2 — Instalacja klienta ProtonVPN CLI (Debian/Kali)
-wget https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3-3_all.deb
-sudo dpkg -i protonvpn-stable-release_1.0.3-3_all.deb
-sudo apt update && sudo apt install proton-vpn-gnome-desktop
-
-# Lub CLI bez GUI:
-sudo apt install protonvpn-cli
-
-# Krok 3 — Połączenie w trybie Stealth przez CLI
-protonvpn-cli login --username USER
-protonvpn-cli connect --stealth --fastest
-
-# Krok 4 — Integracja z ETA kill-switch
-# W pliku /etc/nftables-vpn-killswitch.conf zmień:
-#   udp dport 51820  →  tcp dport 443
-# i zaktualizuj IP endpointu Stealth z pliku konfiguracyjnego
-
-# Weryfikacja — brak rozpoznawalnego podpisu WireGuard:
-sudo tcpdump -i eth0 -n 'tcp port 443' | head -5
-# Powinno wyglądać jak standardowy ruch TLS</pre>
-
-      <div class="alert info">
-        <span class="alert-icon">ℹ</span>
-        <p><strong>Stealth a kill-switch ETA:</strong> Przy przejściu na Stealth konieczna jest
-        aktualizacja reguły nftables z <code>udp dport 51820</code> na <code>tcp dport 443</code>
-        oraz aktualizacja adresu IP endpointu. Pozostałe warstwy ETA (DNS, IPv6, sysctl) działają
-        bez modyfikacji — Stealth zmienia wyłącznie warstwę transportową.</p>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Scenariusz</th><th>WireGuard (standard)</th><th>ETA-Stealth (ProtonVPN)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Sieć hotelowa bez restrykcji</td><td style="color:var(--accent)">✓ Działa</td><td style="color:var(--accent)">✓ Działa</td></tr>
-            <tr><td>Sieć z blokadą UDP/51820</td><td style="color:var(--warn)">✗ Zablokowany</td><td style="color:var(--accent)">✓ Działa (TCP 443)</td></tr>
-            <tr><td>Sieć korporacyjna z DPI</td><td style="color:var(--warn)">✗ Rozpoznany/zablokowany</td><td style="color:var(--accent)">✓ Niewidoczny (TLS)</td></tr>
-            <tr><td>ISP z cenzurą VPN</td><td style="color:var(--warn)">✗ Zablokowany</td><td style="color:var(--accent)">✓ Omija blokadę</td></tr>
-            <tr><td>Analiza metadanych sieciowych</td><td style="color:#f0c040">⚠ IP serwera VPN widoczne</td><td style="color:var(--accent)">✓ IP wygląda jak HTTPS CDN</td></tr>
-            <tr><td>Overhead wydajnościowy vs baseline</td><td>−2.5%</td><td>−5 do −8% (TCP vs UDP)</td></tr>
-            <tr><td>Czas handshake (przełączenie sieci)</td><td>&lt;200 ms</td><td>~400–800 ms (TCP SYN+TLS)</td></tr>
-          </tbody>
-          <caption>Tabela 4b. ETA vs ETA-Stealth — porównanie w różnych środowiskach sieciowych</caption>
-        </table>
-      </div>
-
-      <h3>4.3.2 Kiedy używać ETA-Stealth</h3>
-
-      <p>
-        Tryb Stealth nie jest domyślnie zalecany dla wszystkich środowisk — protokół UDP WireGuard
-        zapewnia lepszą wydajność i mniejsze opóźnienia, co ma znaczenie przy pracy z aplikacjami
-        czasu rzeczywistego (wideokonferencje, SSH). ETA-Stealth jest wskazany w następujących
-        scenariuszach:
-      </p>
-
-      <div class="timeline">
-        <div class="tl-item">
-          <div class="tl-dot" style="border-color:var(--accent2)"></div>
-          <div class="tl-label" style="color:var(--accent2)">Scenariusz 1</div>
-          <div class="tl-title">Sieci korporacyjne z restrykcyjnym firewallem</div>
-          <div class="tl-desc">Środowiska enterprise często blokują ruch UDP inny niż DNS/QUIC oraz wszystkie niestandardowe porty. Stealth (TCP 443) przechodzi przez każdy firewall przepuszczający HTTPS.</div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-dot" style="border-color:var(--accent2)"></div>
-          <div class="tl-label" style="color:var(--accent2)">Scenariusz 2</div>
-          <div class="tl-title">Praca w krajach z cenzurą internetową</div>
-          <div class="tl-desc">Systemy cenzury sieciowej (GFW, SORM) identyfikują i blokują ruch VPN na podstawie analizy protokołów. Obfuskacja TLS sprawia, że VPN jest nieodróżnialny od ruchu webowego.</div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-dot" style="border-color:var(--accent2)"></div>
-          <div class="tl-label" style="color:var(--accent2)">Scenariusz 3</div>
-          <div class="tl-title">Dziennikarstwo, działalność śledcza, whistleblowing</div>
-          <div class="tl-desc">Gdy sama obecność połączenia VPN w logach ISP może stanowić dowód działalności, ukrycie węzła VPN eliminuje ten ślad metadanych.</div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-dot" style="border-color:var(--accent2)"></div>
-          <div class="tl-label" style="color:var(--accent2)">Scenariusz 4</div>
-          <div class="tl-title">Sieci z aktywnym monitoringiem (Red Team / Pen Test)</div>
-          <div class="tl-desc">W środowiskach z zaawansowanym SOC i SIEM, gdzie anomalie sieciowe wyzwalają alerty, Stealth eliminuje sygnaturę VPN z telemetrii sieciowej.</div>
-        </div>
-      </div>
-
-      <h3>4.4 Ograniczenia i znane luki</h3>
-
-      <p>
-        Architektura ETA (w tym wariant Stealth) nie eliminuje wszystkich możliwych wektorów ataku.
-        Zidentyfikowane ograniczenia: (1) brak ochrony przed atakami na poziomie urządzenia
-        (keylogger, rootkit na hoście — mitigacja: Etap 3, pełna izolacja VM); (2) zależność
-        od infrastruktury dostawcy VPN — kompromitacja serwerów ProtonVPN byłaby poza kontrolą
-        ETA; (3) Stealth eliminuje identyfikację VPN, ale nie ukrywa faktu połączenia z konkretnym
-        adresem IP serwera ProtonVPN (mitigacja: zmiana serwera, routing przez Tor);
-        (4) brak ochrony metadanych czasowych i wolumenu transmisji.
-      </p>
-
-      <div class="alert warn">
-        <span class="alert-icon">⚠</span>
-        <p><strong>Ważne zastrzeżenie:</strong> ETA jest narzędziem ochrony prywatności
-        i bezpieczeństwa sieci dla legalnych zastosowań. System testowano wyłącznie
-        w środowisku własnym autora. Wszelkie testy penetracyjne należy przeprowadzać
-        wyłącznie na systemach, do których posiada się autoryzację.</p>
-      </div>
-    </div>
-
-    <!-- CONCLUSION -->
-    <div class="section animate-in" id="conclusion" style="animation-delay:.3s">
-      <div class="section-label">Section 05</div>
-      <h2 class="section-title">Wnioski</h2>
-
-      <p>
-        Badanie potwierdza hipotezę, że możliwe jest zbudowanie wielowarstwowej architektury
-        bezpieczeństwa sieci wyłącznie z komponentów open-source, która eliminuje wszystkie
-        zidentyfikowane wektory wycieku danych w środowisku niezaufanej sieci zewnętrznej.
-      </p>
-
-      <p>
-        Wynik <strong>86/88 PASS przy ocenie A — Doskonały</strong>, zerowej liczbie błędów
-        krytycznych i zerowej liczbie wyników FAIL potwierdza dojrzałość implementacji do
-        zastosowań produkcyjnych. Jedyny WARN (przeglądarka na hoście zamiast w VM) znika
-        po aktywacji Etapu 3. Architektura ETA jest gotowa do wdrożenia produkcyjnego.
-      </p>
-
-      <p>
-        Rozszerzenie <strong>ETA-Stealth</strong> z protokołem ProtonVPN Stealth (obfuskacja TLS
-        przez TCP 443) eliminuje ostatni identyfikowalny element architektury — rozpoznawalną
-        sygnaturę UDP WireGuard. Po aktywacji Stealth żaden obserwator sieci, DPI ani system
-        cenzury nie jest w stanie odróżnić połączenia ETA od standardowego ruchu HTTPS,
-        co czyni architekturę kompletną dla najbardziej wymagających scenariuszy operacyjnych.
-      </p>
-
-      <p>
-        Kluczowe wnioski techniczne: (1) zasada fail-closed wymaga załadowania kill-switcha
-        jako usługi systemd z <code>Before=network-pre.target</code>; (2) wyłączenie
-        <code>systemd-resolved</code> i statyczny <code>/etc/resolv.conf</code> są warunkiem
-        koniecznym ochrony DNS; (3) linia <code>DNS=</code> w pliku WireGuard musi być
-        zakomentowana; (4) przy przejściu na Stealth reguła nftables wymaga zmiany
-        <code>udp dport 51820</code> → <code>tcp dport 443</code> z aktualizacją IP endpointu.
-      </p>
-
-      <div class="alert success">
-        <span class="alert-icon">✓</span>
-        <p><strong>Dostępność:</strong> Kompletna implementacja ETA, skrypty instalacyjne
-        i narzędzie audytu bezpieczeństwa są dostępne jako oprogramowanie open-source
-        na licencji MIT. Kod źródłowy, dokumentacja i skrypty są dostępne w repozytorium
-        GitHub wskazanym w nagłówku niniejszej publikacji.</p>
-      </div>
-    </div>
-
-    <!-- GALLERY -->
-    <div class="section" id="gallery">
-      <div class="section-label">Dokumentacja fotograficzna</div>
-      <h2 class="section-title">Galeria instalacji</h2>
-
-      <p style="margin-bottom:1.5rem;font-size:.88rem;color:var(--text-dim)">
-        
-      </p>
-
-      <div class="gallery-grid">
-        <figure class="figure">
-          <div class="figure-img" onclick="triggerUpload(this)">
-            <span class="figure-placeholder-num">FIG 01</span>
-            <span class="upload-icon">⊕</span>
-            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Konfiguracja systemu bazowego</span></div>
-            <input type="file" accept="image/*" onchange="loadImage(this)">
-            <img alt="Konfiguracja systemu bazowego">
-          </div>
-          <figcaption><strong>Fig. 1</strong> — Kali Linux 2024.x po instalacji bazowej, przygotowanie środowiska ETA</figcaption>
-        </figure>
-
-        <figure class="figure">
-          <div class="figure-img" onclick="triggerUpload(this)">
-            <span class="figure-placeholder-num">FIG 02</span>
-            <span class="upload-icon">⊕</span>
-            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Instalacja stosu DNS</span></div>
-            <input type="file" accept="image/*" onchange="loadImage(this)">
-            <img alt="Instalacja stosu DNS">
-          </div>
-          <figcaption><strong>Fig. 2</strong> — Instalacja i konfiguracja Unbound + dnscrypt-proxy, wynik testu DNSSEC</figcaption>
-        </figure>
-
-        <figure class="figure">
-          <div class="figure-img" onclick="triggerUpload(this)">
-            <span class="figure-placeholder-num">FIG 03</span>
-            <span class="upload-icon">⊕</span>
-            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Konfiguracja WireGuard</span></div>
-            <input type="file" accept="image/*" onchange="loadImage(this)">
-            <img alt="Konfiguracja WireGuard">
-          </div>
-          <figcaption><strong>Fig. 3</strong> — Konfiguracja interfejsu WireGuard wg0, plik wg0.conf po modyfikacji</figcaption>
-        </figure>
-
-        <figure class="figure">
-          <div class="figure-img" onclick="triggerUpload(this)">
-            <span class="figure-placeholder-num">FIG 04</span>
-            <span class="upload-icon">⊕</span>
-            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Kill-switch nftables</span></div>
-            <input type="file" accept="image/*" onchange="loadImage(this)">
-            <img alt="Kill-switch nftables">
-          </div>
-          <figcaption><strong>Fig. 4</strong> — Reguły kill-switch nftables, weryfikacja polityki OUTPUT:drop</figcaption>
-        </figure>
-
-        <figure class="figure">
-          <div class="figure-img" onclick="triggerUpload(this)">
-            <span class="figure-placeholder-num">FIG 05</span>
-            <span class="upload-icon">⊕</span>
-            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Maszyna wirtualna VM</span></div>
-            <input type="file" accept="image/*" onchange="loadImage(this)">
-            <img alt="Maszyna wirtualna VM">
-          </div>
-          <figcaption><strong>Fig. 5</strong> — Uruchomienie maszyny wirtualnej QEMU/KVM, interfejs TAP, cloud-init</figcaption>
-        </figure>
-
-        <figure class="figure">
-          <div class="figure-img" onclick="triggerUpload(this)">
-            <span class="figure-placeholder-num">FIG 06</span>
-            <span class="upload-icon">⊕</span>
-            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Wyniki audytu</span></div>
-            <input type="file" accept="image/*" onchange="loadImage(this)">
-            <img alt="Wyniki audytu">
-          </div>
-          <figcaption><strong>Fig. 6</strong> — Raport z automatycznego audytu bezpieczeństwa (82/88), terminal</figcaption>
-        </figure>
-
-        <figure class="figure" style="grid-column: 1 / -1">
-          <div class="figure-img" onclick="triggerUpload(this)" style="aspect-ratio:21/9">
-            <span class="figure-placeholder-num">FIG 07</span>
-            <span class="upload-icon">⊕</span>
-            <div class="upload-hint">Kliknij, aby dodać zdjęcie<br><span style="color:var(--border)">Widok ogólny — środowisko testowe</span></div>
-            <input type="file" accept="image/*" onchange="loadImage(this)">
-            <img alt="Widok ogólny środowiska testowego">
-          </div>
-          <figcaption><strong>Fig. 7</strong> — Pełny widok środowiska testowego: host Kali Linux + VM + monitoring sieci (Wireshark)</figcaption>
-        </figure>
-      </div>
-    </div>
-
-    <!-- SCRIPTS -->
-    <div class="section" id="scripts">
-      <div class="section-label">Repozytorium</div>
-      <h2 class="section-title">Skrypty i pliki projektu</h2>
-
-      <p>Projekt zawiera następujące pliki dostępne w repozytorium GitHub:</p>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Plik</th><th>Opis</th><th>Język</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>eta_install.sh</code></td>
-              <td>Główny skrypt instalacyjny — wszystkie etapy ETA (host hardening, DNS, VPN, kill-switch)</td>
-              <td>Bash</td>
-            </tr>
-            <tr>
-              <td><code>eta_security_test.sh</code></td>
-              <td>Skrypt audytu bezpieczeństwa — 88 automatycznych testów, raport A–F</td>
-              <td>Bash</td>
-            </tr>
-            <tr>
-              <td><code>eta_vm_setup.sh</code></td>
-              <td>Konfiguracja maszyny wirtualnej QEMU/KVM, cloud-init, interfejs TAP</td>
-              <td>Bash</td>
-            </tr>
-            <tr>
-              <td><code>eta_stealth_switch.sh</code></td>
-              <td>Przełącznik ETA → ETA-Stealth: aktualizuje kill-switch nftables (UDP 51820 → TCP 443), endpoint Stealth ProtonVPN</td>
-              <td>Bash</td>
-            </tr>
-            <tr>
-              <td><code>nftables-vpn-killswitch.conf</code></td>
-              <td>Reguły kill-switch nftables — gotowy do wdrożenia</td>
-              <td>nftables</td>
-            </tr>
-            <tr>
-              <td><code>unbound.conf</code></td>
-              <td>Konfiguracja lokalnego resolwera DNS z DNSSEC i qname-minimisation</td>
-              <td>Config</td>
-            </tr>
-            <tr>
-              <td><code>dnscrypt-proxy.toml</code></td>
-              <td>Konfiguracja proxy DNS-over-HTTPS, wymagania DNSSEC + no-log</td>
-              <td>TOML</td>
-            </tr>
-            <tr>
-              <td><code>librewolf/user.js</code></td>
-              <td>Hardening przeglądarki: WebRTC off, fingerprinting resistance, TRR off</td>
-              <td>JavaScript</td>
-            </tr>
-            <tr>
-              <td><code>index.html</code></td>
-              <td>Niniejsza publikacja IMRaD — GitHub Pages</td>
-              <td>HTML/JS</td>
-            </tr>
-          </tbody>
-          <caption>Tabela 5. Pliki projektu ETA dostępne w repozytorium</caption>
-        </table>
-      </div>
-
-      <h3>Szybkie wdrożenie (Kali Linux / Debian)</h3>
-      <pre>
-# Sklonuj repozytorium
-git clone https://github.com/majsterek/eta.git
-cd eta
-
-# Etap 1 + 2: Host hardening, DNS, VPN, kill-switch (~45 min)
-sudo bash eta_install.sh --vpn-config /path/to/wg0.conf
-
-# Weryfikacja bezpieczeństwa (88 testów)
-sudo bash eta_security_test.sh
-
-# Opcjonalnie: przełączenie na ETA-Stealth (ProtonVPN Stealth / TCP 443)
-sudo bash eta_stealth_switch.sh --stealth-config /path/to/wg0-stealth.conf
-
-# Opcjonalnie: izolacja VM (Etap 3)
-sudo bash eta_vm_setup.sh --image debian12-cloud.qcow2</pre>
-    </div>
-
-    <!-- REFERENCES -->
-    <div class="section" id="references">
-      <div class="section-label">Literatura</div>
-      <h2 class="section-title">Referencje</h2>
-
-      <ul class="ref-list">
-        <li>
-          <span class="ref-num">[1]</span>
-          <span>Donenfeld, J.A. (2017). WireGuard: Next Generation Kernel Network Tunnel.
-          <em>NDSS Symposium 2017</em>.
-          <a href="https://www.wireguard.com/papers/wireguard.pdf" target="_blank">wireguard.com/papers/wireguard.pdf</a></span>
-        </li>
-        <li>
-          <span class="ref-num">[2]</span>
-          <span>Arends, R. et al. (2005). DNS Security Introduction and Requirements.
-          <em>RFC 4033</em>. IETF.
-          <a href="https://datatracker.ietf.org/doc/html/rfc4033" target="_blank">datatracker.ietf.org/doc/rfc4033</a></span>
-        </li>
-        <li>
-          <span class="ref-num">[3]</span>
-          <span>Hoffman, P., McManus, P. (2018). DNS Queries over HTTPS (DoH).
-          <em>RFC 8484</em>. IETF.
-          <a href="https://datatracker.ietf.org/doc/html/rfc8484" target="_blank">datatracker.ietf.org/doc/rfc8484</a></span>
-        </li>
-        <li>
-          <span class="ref-num">[4]</span>
-          <span>Bortzmeyer, S. (2016). DNS Query Name Minimisation to Improve Privacy.
-          <em>RFC 7816</em>. IETF.</span>
-        </li>
-        <li>
-          <span class="ref-num">[5]</span>
-          <span>Trail of Bits. (2019). <em>WireGuard Security Audit</em>.
-          <a href="https://www.wireguard.com/papers/wireguard-audit-2019.pdf" target="_blank">wireguard.com/papers/wireguard-audit-2019.pdf</a></span>
-        </li>
-        <li>
-          <span class="ref-num">[6]</span>
-          <span>IBM Security. (2024). <em>Cost of a Data Breach Report 2024</em>.
-          IBM Corporation.</span>
-        </li>
-        <li>
-          <span class="ref-num">[7]</span>
-          <span>Verizon. (2024). <em>Data Breach Investigations Report 2024</em>. Verizon Communications.</span>
-        </li>
-        <li>
-          <span class="ref-num">[8]</span>
-          <span>Rozporządzenie (UE) 2016/679 (RODO). Parlament Europejski, 2016.
-          <a href="https://eur-lex.europa.eu/legal-content/PL/TXT/?uri=CELEX:32016R0679" target="_blank">eur-lex.europa.eu</a></span>
-        </li>
-        <li>
-          <span class="ref-num">[9]</span>
-          <span>Dyrektywa (UE) 2022/2555 (NIS2). Parlament Europejski, 2022.</span>
-        </li>
-        <li>
-          <span class="ref-num">[10]</span>
-          <span>ISO/IEC 27001:2022. <em>Information security, cybersecurity and privacy protection</em>.
-          International Organization for Standardization.</span>
-        </li>
-      </ul>
-    </div>
-
-  </article>
 </main>
 
-<!-- FOOTER -->
-<footer>
-  <div>
-    <strong style="color:var(--accent)">Enforced Tunnel Architecture (ETA) + ETA-Stealth</strong>
-    · Paweł Majsterek · Piaseczno, Polska · 5 marca 2026
-  </div>
-  <div style="margin-top:.3rem">
-    Kali Linux 2024.x · Wynik audytu: <strong style="color:var(--accent)">86/88 PASS · A — DOSKONAŁY</strong> · 0 FAIL · 0 błędów krytycznych
-  </div>
-  <div style="margin-top:.3rem">
-    ProtonVPN Stealth · WireGuard · Unbound · DNSSEC · DoH · nftables · QEMU/KVM · LibreWolf
-  </div>
-  <div style="margin-top:.3rem">
-    Licencja MIT · Open-source ·
-    <a href="https://github.com/majsterek/eta">github.com/majsterek/eta</a>
-  </div>
+<footer class="foot">
+  <div>© 2026 · Esej naukowy · CC BY-NC-ND 4.0 · Niekomercyjne cytowanie z podaniem autora dozwolone</div>
+  <div>Źródła: Boltzmann 1877 · Prigogine 1977 · Heisenberg 1927 · Shannon 1948 · Landauer 1961 · Penrose 2004</div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ── SCORE BARS ANIMATION ──────────────────────────────
-function animateBars() {
-  document.querySelectorAll('.score-bar-fill').forEach(el => {
-    const w = el.dataset.w;
-    setTimeout(() => { el.style.width = w + '%'; }, 300);
-  });
-}
-const scoreObs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { animateBars(); scoreObs.disconnect(); } });
-}, { threshold: .3 });
-const sc = document.getElementById('scoreCard');
-if (sc) scoreObs.observe(sc);
 
-// ── ANIMATE-IN ON SCROLL ──────────────────────────────
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.style.opacity = '1'; obs.unobserve(e.target); }
-  });
-}, { threshold: .06 });
-document.querySelectorAll('.animate-in').forEach(el => obs.observe(el));
+<script>
+'use strict';
+const PI = Math.PI, TAU = 2*PI;
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const G = id => document.getElementById(id);
 
-// ── ACTIVE TOC LINK ───────────────────────────────────
-const sections = document.querySelectorAll('.section[id]');
-const tocLinks = document.querySelectorAll('.toc-list a');
-window.addEventListener('scroll', () => {
-  let cur = '';
-  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) cur = s.id; });
-  tocLinks.forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
-  });
-}, { passive: true });
-
-// ── IMAGE UPLOAD ──────────────────────────────────────
-function triggerUpload(wrap) {
-  const input = wrap.querySelector('input[type="file"]');
-  if (input) input.click();
-}
-function loadImage(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = input.closest('.figure-img').querySelector('img');
-    img.src = e.target.result;
-    img.classList.add('loaded');
-    // hide placeholders
-    const wrap = input.closest('.figure-img');
-    wrap.querySelectorAll('.upload-hint, .upload-icon, .figure-placeholder-num')
-      .forEach(el => el.style.opacity = '0');
-  };
-  reader.readAsDataURL(file);
+// SVG namespace helper
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v));
+  return el;
 }
 
-// ── SMOOTH ANCHOR SCROLL ──────────────────────────────
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEvent
+// Get SVG viewbox width (always reliable — SVG fills container via CSS width:100%)
+function svgW(svgId) {
+  const el = G(svgId);
+  return el.getBoundingClientRect().width || el.parentElement.clientWidth || 700;
+}
+
+// Replace all children of SVG element
+function setSVG(id, fn) {
+  const svg = G(id);
+  const W = svgW(id);
+  const H = +svg.getAttribute('height') || 320;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = '';
+  fn(svg, W, H);
+}
+
+// ── COLOR CONSTANTS ──────────────────────────
+const CG = '#8a6a1a', CS = '#6a5a3a', CD = '#c0ab88';
+const CC = '#1a6e8a', CR = '#8a2a10', CB = '#faf7f2';
+const CB2 = 'rgba(140,100,30,0.18)';
+
+// ── SVG TEXT helper ──────────────────────────
+function t(svg, x, y, txt, attrs={}) {
+  const el = svgEl('text', {x, y, ...attrs});
+  el.textContent = txt;
+  svg.appendChild(el);
+}
+function line(svg, x1,y1,x2,y2,attrs={}) {
+  svg.appendChild(svgEl('line', {x1,y1,x2,y2,...attrs}));
+}
+function rect(svg, x,y,w,h,attrs={}) {
+  svg.appendChild(svgEl('rect', {x,y,width:w,height:h,...attrs}));
+}
+function circle(svg, cx,cy,r,attrs={}) {
+  svg.appendChild(svgEl('circle', {cx,cy,r,...attrs}));
+}
+function path(svg, d, attrs={}) {
+  svg.appendChild(svgEl('path', {d,...attrs}));
+}
+function polyline(svg, pts, attrs={}) {
+  svg.appendChild(svgEl('polyline', {points:pts.map(([x,y])=>`${x},${y}`).join(' '), ...attrs}));
+}
+
+function mkDefs(svg, items) {
+  const defs = svgEl('defs', {});
+  items.forEach(el => defs.appendChild(el));
+  svg.appendChild(defs);
+}
+
+function linGrad(id, x1,y1,x2,y2, stops) {
+  const g = svgEl('linearGradient', {id,x1,y1,x2,y2, gradientUnits:'userSpaceOnUse'});
+  stops.forEach(([offset,color]) => {
+    const s = svgEl('stop', {}); s.setAttribute('offset',offset); s.setAttribute('stop-color',color);
+    g.appendChild(s);
+  });
+  return g;
+}
+
+function gridLines(svg, pad, W, H, rows=4) {
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  for(let i=1;i<=rows;i++) {
+    const y = pad.t + ph*(1-i/rows);
+    line(svg, pad.l,y, pad.l+pw,y, {stroke:CB2,'stroke-width':'.5'});
+  }
+}
+
+function axes(svg, pad, W, H, xl, yl) {
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  const font = "9px 'Share Tech Mono',monospace";
+  line(svg, pad.l,pad.t, pad.l,pad.t+ph+4, {stroke:CS,'stroke-width':'1'});
+  line(svg, pad.l-4,pad.t+ph, pad.l+pw,pad.t+ph, {stroke:CS,'stroke-width':'1'});
+  t(svg, pad.l+pw/2, H-3, xl, {'text-anchor':'middle','fill':CS,'font-size':'10','font-family':"'Share Tech Mono',monospace"});
+  const tl = svgEl('text', {x:'13',y:`${pad.t+ph/2}`,'text-anchor':'middle','fill':CS,'font-size':'10','font-family':"'Share Tech Mono',monospace",'transform':`rotate(-90,13,${pad.t+ph/2})`});
+  tl.textContent = yl; svg.appendChild(tl);
+}
+
+// ═══════════════════════════════════════════
+// CHART 1 — Maxwell-Boltzmann
+// ═══════════════════════════════════════════
+function drawG1() {
+  const T = +G('r1T').value, Gv = G('r1G').value/100;
+  G('d1T').textContent = T+' K';
+  G('d1G').textContent = Math.round(Gv*100)+' %';
+
+  setSVG('g1', (svg, W, H) => {
+    const kB=1.38e-23, m=6.64e-26;
+    const a2=kB*T/m, vp=Math.sqrt(2*a2), vmax=vp*3.5;
+    const pad={l:52,r:24,t:30,b:44};
+    const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+
+    const mb=v=>4*PI*v*v*Math.exp(-v*v/(2*a2))/Math.pow(2*PI*a2,1.5);
+    const mbG=v=>mb(v)*(1+Gv*Math.sin(PI*v/vmax));
+    let mx=1e-99;
+    const bins=100;
+    for(let i=0;i<bins;i++) mx=Math.max(mx,mbG((i+.5)*vmax/bins));
+
+    rect(svg,0,0,W,H,{fill:CB});
+    gridLines(svg,pad,W,H);
+
+    // Fill gradient
+    const g=linGrad('mbFill',pad.l,pad.t,pad.l,pad.t+ph,[['0%','rgba(138,106,26,.18)'],['100%','rgba(138,106,26,.02)']]);
+    mkDefs(svg,[g]);
+
+    // Compute polyline points
+    const pts=[];
+    for(let i=0;i<bins;i++){
+      const v=(i+.5)*vmax/bins;
+      pts.push([pad.l+v/vmax*pw, pad.t+ph*(1-mbG(v)/mx)]);
+    }
+
+    // Area fill
+    const fillPts=[[pad.l,pad.t+ph],...pts,[pad.l+pw,pad.t+ph]];
+    path(svg,'M'+fillPts.map(([x,y])=>`${x.toFixed(1)},${y.toFixed(1)}`).join('L')+'Z',{fill:'url(#mbFill)',stroke:'none'});
+    // Line
+    polyline(svg,pts,{fill:'none',stroke:CG,'stroke-width':'2','stroke-linejoin':'round'});
+
+    // vp line
+    const vpx=pad.l+vp/vmax*pw;
+    line(svg,vpx,pad.t,vpx,pad.t+ph,{stroke:'rgba(138,106,26,.35)','stroke-width':'1','stroke-dasharray':'4,6'});
+    t(svg,vpx,pad.t-5,'v_p',{'text-anchor':'middle',fill:'rgba(138,106,26,.6)','font-size':'9','font-family':"'Share Tech Mono',monospace"});
+
+    // Axis ticks
+    for(let i=0;i<=4;i++){
+      t(svg,pad.l+i*pw/4,pad.t+ph+14,Math.round(i*vmax/4),{'text-anchor':'middle',fill:CD,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+      t(svg,pad.l-5,pad.t+ph*(1-i/4)+3,(i/4).toFixed(2),{'text-anchor':'end',fill:CD,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+    }
+    axes(svg,pad,W,H,'prędkość v [m/s]','f(v)');
+
+    // Gradient overlay
+    if(Gv>0.02){
+      const go=linGrad('goFill',pad.l,0,pad.l+pw,0,[['0%','rgba(26,110,138,0)'],[`50%`,`rgba(26,110,138,${(Gv*.08).toFixed(3)})`],['100%','rgba(26,110,138,0)']]);
+      mkDefs(svg,[go]);
+      rect(svg,pad.l,pad.t,pw,ph,{fill:'url(#goFill)'});
+    }
+
+    t(svg,W-pad.r,pad.t+14,`T=${T}K  G=${Math.round(Gv*100)}%`,{'text-anchor':'end',fill:CG,'font-size':'10','font-family':"'Share Tech Mono',monospace"});
+  });
+}
+G('r1T').oninput = drawG1;
+G('r1G').oninput = drawG1;
+
+// ═══════════════════════════════════════════
+// CHART 2 — Wave / SOFAR  (animated SVG polyline)
+// ═══════════════════════════════════════════
+let wPh=0, wRaf=null, wOn=false;
+
+function drawWaveFrame() {
+  if(!wOn){wRaf=null;return;}
+  const dT=G('r2T').value/100, al=G('r2a').value/200, om=+G('r2w').value;
+
+  setSVG('g2', (svg, W, H) => {
+    const pad={l:20,r:20,t:30,b:20};
+    const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+
+    rect(svg,0,0,W,H,{fill:CB});
+
+    if(dT>0.05){
+      const bg=linGrad('waveBg',0,pad.t,0,pad.t+ph,[[`0%`,`rgba(26,110,138,${(dT*.07).toFixed(3)})`],[`${(45).toFixed(0)}%`,`rgba(26,110,138,${(dT*.16).toFixed(3)})`],[`${(55).toFixed(0)}%`,`rgba(26,110,138,${(dT*.04).toFixed(3)})`],[`100%`,`rgba(26,110,138,${(dT*.01).toFixed(3)})`]]);
+      mkDefs(svg,[bg]);
+      rect(svg,pad.l,pad.t,pw,ph,{fill:'url(#waveBg)'});
+      const sy=pad.t+ph*(.5-dT*.15);
+      line(svg,pad.l,sy,pad.l+pw,sy,{stroke:`rgba(26,110,138,${(dT*.5).toFixed(3)})`,'stroke-width':'.8','stroke-dasharray':'5,9'});
+      t(svg,pad.l+8,sy-5,'kanał SOFAR',{fill:`rgba(26,110,138,${(dT*.7).toFixed(3)})`,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+    }
+
+    const nW=dT>.1?3:1;
+    for(let w=0;w<nW;w++){
+      const phOff=w*(TAU/nW), wAmp=dT>.1?1-w*.22:1;
+      const pts=[];
+      for(let xi=0;xi<=pw;xi+=2){
+        const tx=xi/pw, dmp=Math.exp(-al*tx*8);
+        const bend=dT*Math.sin(tx*PI)*ph*.18, spr=(1-dT)*ph*.06*w;
+        const y=H/2+bend+spr+Math.sin(om*tx*TAU-wPh+phOff)*ph*.17*dmp*wAmp;
+        pts.push([pad.l+xi,y]);
+      }
+      polyline(svg,pts,{fill:'none',stroke:w===0?CG:`rgba(138,106,26,${(.35*(1-w*.2)*dT).toFixed(3)})`,'stroke-width':w===0?'2':'.8'});
+    }
+
+    t(svg,W-pad.r,pad.t+14,`ΔT=${G('r2T').value}  α=${G('r2a').value}  ω=${om}`,{'text-anchor':'end',fill:CG,'font-size':'10','font-family':"'Share Tech Mono',monospace"});
+  });
+
+  wPh+=0.045;
+  wRaf=requestAnimationFrame(drawWaveFrame);
+}
+function startWave(){wOn=true;if(!wRaf)wRaf=requestAnimationFrame(drawWaveFrame);}
+function stopWave(){wOn=false;}
+G('r2T').oninput=()=>G('d2T').textContent=G('r2T').value;
+G('r2a').oninput=()=>G('d2a').textContent=G('r2a').value;
+G('r2w').oninput=()=>G('d2w').textContent=G('r2w').value;
+
+// ═══════════════════════════════════════════
+// CHART 3 — Quantum spectrum
+// ═══════════════════════════════════════════
+const ELEM=['H','He','Li','Be','B','C','N','O'];
+const SERIES=['Lymana','Balmera','Paschena','Bracketta'];
+const SN=[1,2,3,4];
+const RH=1.097e7;
+
+function wlRGB(nm){
+  let r,g,b;
+  if(nm>=380&&nm<440){r=(440-nm)/60;g=0;b=1;}
+  else if(nm>=440&&nm<490){r=0;g=(nm-440)/50;b=1;}
+  else if(nm>=490&&nm<510){r=0;g=1;b=(510-nm)/20;}
+  else if(nm>=510&&nm<580){r=(nm-510)/70;g=1;b=0;}
+  else if(nm>=580&&nm<645){r=1;g=(645-nm)/65;b=0;}
+  else if(nm>=645&&nm<=780){r=1;g=0;b=0;}
+  else{r=.4;g=.4;b=.4;}
+  const a=nm<420?.3+(nm-380)/40*.7:nm>700?.3+(780-nm)/80*.7:1;
+  return `rgba(${~~(r*255)},${~~(g*255)},${~~(b*255)},${a.toFixed(2)})`;
+}
+
+function drawG3(){
+  const Z=+G('r3Z').value, nMax=+G('r3n').value, si=G('r3s').value-1, n1=SN[si];
+  G('d3Z').textContent=ELEM[Z-1]+' (Z='+Z+')';
+  G('d3n').textContent='n = '+nMax;
+  G('d3s').textContent='Seria '+SERIES[si];
+
+  setSVG('g3',(svg,W,H)=>{
+    const pl=58,pr=20,pt=44,pb=52;
+    const pw=W-pl-pr, ph=H-pt-pb;
+    const Efn=n=>-13.6*Z*Z/(n*n);
+    const eMin=Efn(nMax), eRng=Efn(1)-eMin;
+    const ey=n=>pt+ph*(1-(Efn(n)-eMin)/eRng);
+    const barY=pt+ph*.14, barH=ph*.36;
+
+    rect(svg,0,0,W,H,{fill:CB});
+
+    // Spectrum gradient
+    const stops=[];
+    for(let nm=380;nm<=780;nm+=4) stops.push([`${((nm-380)/400*100).toFixed(1)}%`,wlRGB(nm)]);
+    const sg=linGrad('specG',pl,0,pl+pw,0,stops);
+    mkDefs(svg,[sg]);
+    rect(svg,pl,barY,pw,barH,{fill:'url(#specG)',opacity:'.88'});
+    rect(svg,pl,barY,pw,barH,{fill:'rgba(250,247,242,.5)'});
+
+    // Energy levels
+    for(let n=1;n<=nMax;n++){
+      const y=ey(n), col=n===1?CG:'rgba(138,106,26,.35)';
+      line(svg,pl,y,pl+48,y,{stroke:col,'stroke-width':n===1?'1.5':'.8'});
+      t(svg,pl-4,y+3.5,`n=${n}`,{'text-anchor':'end',fill:'rgba(138,106,26,.7)','font-size':'9','font-family':"'Share Tech Mono',monospace"});
+      t(svg,pl+52,y+3.5,`${Efn(n).toFixed(1)}eV`,{fill:'rgba(138,106,26,.4)','font-size':'9','font-family':"'Share Tech Mono',monospace"});
+    }
+
+    // Transitions
+    for(let n2=n1+1;n2<=nMax;n2++){
+      const lnm=1e9/(RH*Z*Z*(1/(n1*n1)-1/(n2*n2)));
+      const col=wlRGB(lnm), vis=lnm>=380&&lnm<=780;
+      const ax=pl+60+(n2-n1-1)*22;
+      line(svg,ax,ey(n2),ax,ey(n1),{stroke:vis?col:'rgba(180,180,180,.2)','stroke-width':'1','stroke-dasharray':'2,4'});
+      if(vis){
+        const lx=pl+(lnm-380)/400*pw;
+        line(svg,lx,barY,lx,barY+barH,{stroke:col,'stroke-width':'2.5'});
+        t(svg,lx,barY+barH+13,`${~~lnm}nm`,{'text-anchor':'middle',fill:col,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+      }
+    }
+
+    // Axes/labels
+    line(svg,pl,pt,pl,pt+ph,{stroke:CS,'stroke-width':'.8'});
+    line(svg,pl,pt+ph,pl+pw,pt+ph,{stroke:CS,'stroke-width':'.8'});
+    t(svg,pl+pw/2,H-4,'długość fali λ [nm]',{'text-anchor':'middle',fill:CS,'font-size':'10','font-family':"'Share Tech Mono',monospace"});
+    const tl=svgEl('text',{x:'13',y:`${pt+ph/2}`,'text-anchor':'middle',fill:CS,'font-size':'10','font-family':"'Share Tech Mono',monospace",'transform':`rotate(-90,13,${pt+ph/2})`});
+    tl.textContent='energia [eV]'; svg.appendChild(tl);
+    t(svg,W-pr,pt-10,`${ELEM[Z-1]} · Seria ${SERIES[si]} · n₁=${n1}`,{'text-anchor':'end',fill:CG,'font-size':'10','font-family':"'Share Tech Mono',monospace"});
+  });
+}
+G('r3Z').oninput=drawG3;
+G('r3n').oninput=drawG3;
+G('r3s').oninput=drawG3;
+
+// ═══════════════════════════════════════════
+// CHART 4 — Shannon entropy
+// ═══════════════════════════════════════════
+function Hbit(p){return(p<=0||p>=1)?0:-(p*Math.log2(p)+(1-p)*Math.log2(1-p));}
+
+function drawG4(){
+  const p0=G('r4p').value/100, noise=G('r4s').value/100, T=+G('r4T').value;
+  G('d4p').textContent=G('r4p').value+' %';
+  G('d4s').textContent=G('r4s').value+' %';
+  G('d4T').textContent=T+' K';
+  const Elv=(1.38e-23*T*Math.log(2)/1.6e-19);
+  const pn=clamp(p0+noise*.4*Math.sin(p0*17+noise*13),.01,.99);
+
+  setSVG('g4',(svg,W,H)=>{
+    const pad={l:52,r:148,t:30,b:44};
+    const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+
+    rect(svg,0,0,W,H,{fill:CB});
+    gridLines(svg,pad,W,H);
+
+    // H(p) fill
+    const fg=linGrad('hFill',pad.l,pad.t,pad.l,pad.t+ph,[['0%','rgba(138,106,26,.12)'],['100%','rgba(138,106,26,.01)']]);
+    mkDefs(svg,[fg]);
+    const pts=[];
+    for(let i=0;i<=200;i++){const p=i/200;pts.push([pad.l+p*pw,pad.t+ph*(1-Hbit(p))]);}
+    const fillD='M'+pad.l+','+(pad.t+ph)+'L'+pts.map(([x,y])=>`${x.toFixed(1)},${y.toFixed(1)}`).join('L')+`L${pad.l+pw},${pad.t+ph}Z`;
+    path(svg,fillD,{fill:'url(#hFill)',stroke:'none'});
+    polyline(svg,pts,{fill:'none',stroke:'rgba(138,106,26,.35)','stroke-width':'1.5','stroke-linejoin':'round'});
+
+    // vlines & points
+    const px0=pad.l+p0*pw, py0=pad.t+ph*(1-Hbit(p0));
+    line(svg,px0,pad.t,px0,pad.t+ph,{stroke:'rgba(138,106,26,.3)','stroke-width':'1','stroke-dasharray':'4,6'});
+    circle(svg,px0,py0,6,{fill:CG});
+
+    const pxn=pad.l+pn*pw, pyn=pad.t+ph*(1-Hbit(pn));
+    circle(svg,pxn,pyn,5,{fill:CR});
+
+    // Ticks
+    for(let i=0;i<=4;i++){
+      t(svg,pad.l+i*pw/4,pad.t+ph+13,['0','.25','.5','.75','1'][i],{'text-anchor':'middle',fill:CD,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+      t(svg,pad.l-5,pad.t+ph*(1-i/4)+3,(i/4).toFixed(2),{'text-anchor':'end',fill:CD,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+    }
+    axes(svg,pad,W,H,'prawdopodobieństwo p','H(p) [bit]');
+
+    // Sidebar
+    const ix=pad.l+pw+10, iy=pad.t+16;
+    const fnt="10px 'Share Tech Mono',monospace";
+    [[CG,`H(p₀) =`],[CG,Hbit(p0).toFixed(3)+' bit'],[CR,`H(pₙ) =`],[CR,Hbit(pn).toFixed(3)+' bit'],['rgba(138,106,26,.55)',`E_land =`],['rgba(138,106,26,.55)',Elv.toExponential(2)+' eV'],['rgba(138,106,26,.45)',`T = ${T} K`]].forEach(([col,txt],i)=>{
+      t(svg,ix,iy+i*16,txt,{fill:col,'font-size':'10','font-family':"'Share Tech Mono',monospace"});
+    });
+  });
+}
+G('r4p').oninput=drawG4;
+G('r4s').oninput=drawG4;
+G('r4T').oninput=drawG4;
+
+// ═══════════════════════════════════════════
+// CHART 5 — Temperature scale
+// ═══════════════════════════════════════════
+function drawG5(){
+  setSVG('g5',(svg,W,H)=>{
+    const pl=24,pr=24, axY=H/2;
+    const pw=W-pl-pr;
+    const logMin=Math.log10(.001), logMax=Math.log10(2e7);
+    const tx=T=>pl+(Math.log10(Math.max(T,.001))-logMin)/(logMax-logMin)*pw;
+
+    rect(svg,0,0,W,H,{fill:CB});
+
+    // Axis gradient bar
+    const tg=linGrad('tg',pl,0,pl+pw,0,[['0%','#3060cc'],['35%','#40a0cc'],['60%','#c8a830'],['80%','#cc6820'],['100%','#cc1010']]);
+    mkDefs(svg,[tg]);
+    const barEl=svgEl('rect',{x:pl,y:axY-5,width:pw,height:10,fill:'url(#tg)',rx:3,opacity:.75});
+    svg.appendChild(barEl);
+
+    // Decade ticks
+    for(let exp=Math.ceil(logMin);exp<=Math.ceil(logMax);exp++){
+      const T=Math.pow(10,exp); if(T>2e7*1.2) continue;
+      const x=tx(T);
+      line(svg,x,axY-10,x,axY+10,{stroke:CD,'stroke-width':'.8'});
+      const lbl=T>=1e6?(T/1e6).toFixed(0)+'M':T>=1e3?(T/1e3).toFixed(0)+'k':T<1?T.toFixed(3):String(T);
+      t(svg,x,axY+21,lbl,{'text-anchor':'middle',fill:CD,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+    }
+
+    // Refs
+    const refs=[
+      {T:.001, lab:'Kondensat\nBosego-Einsteina', note:'.001 K', col:'#3060cc', up:true},
+      {T:2.725,lab:'Promieniowanie\ntła CMB',       note:'2.7 K',  col:'#3888aa', up:false},
+      {T:77,   lab:'Ciekły azot',                   note:'77 K',   col:'#44a0bb', up:true},
+      {T:273,  lab:'Topnienie lodu',                note:'273 K',  col:'#60a870', up:false},
+      {T:310,  lab:'Ciało człowieka',               note:'310 K',  col:'#709050', up:true},
+      {T:1811, lab:'Topnienie żelaza',              note:'1811 K', col:'#a07828', up:false},
+      {T:5778, lab:'Powierzchnia\nSłońca',          note:'5778 K', col:'#cc5818', up:true},
+      {T:2.7e4,lab:'Piorun',                        note:'27k K',  col:'#bb3810', up:false},
+      {T:1.5e7,lab:'Jądro Słońca',                  note:'15M K',  col:'#991010', up:true},
+    ];
+    const ARM=72;
+    refs.forEach(r=>{
+      const x=tx(r.T);
+      circle(svg,x,axY,5,{fill:r.col});
+      const y0=axY+(r.up?-7:7), y1=axY+(r.up?-(ARM+8):(ARM+8));
+      line(svg,x,y0,x,y1,{stroke:r.col,'stroke-width':'1','stroke-dasharray':'3,3'});
+      const ty=r.up?y1-14:y1+14;
+      t(svg,x,ty,r.note,{'text-anchor':'middle',fill:r.col,'font-size':'9','font-weight':'bold','font-family':"'Share Tech Mono',monospace"});
+      r.lab.split('\n').forEach((ln,li)=>{
+        t(svg,x,ty+(r.up?-14-li*13:14+li*13),ln,{'text-anchor':'middle',fill:r.col,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+      });
+    });
+
+    t(svg,W/2,18,'SKALA TEMPERATUR (logarytmiczna)',{'text-anchor':'middle',fill:CG,'font-size':'11','font-weight':'bold','font-family':"'Share Tech Mono',monospace"});
+    t(svg,pl,axY-10,'← zimno',{fill:CS,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+    t(svg,pl+pw,axY-10,'gorąco →',{'text-anchor':'end',fill:CS,'font-size':'9','font-family':"'Share Tech Mono',monospace"});
+  });
+}
+
+// ═══════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════
+const DRAW = {p1:drawG1, p2:null, p3:drawG3, p4:drawG4, p5:drawG5};
+
+function switchTab(tid) {
+  document.querySelectorAll('.iw-tab').forEach(b => b.classList.toggle('on', b.dataset.p===tid));
+  document.querySelectorAll('.iw-panel').forEach(p => p.classList.toggle('on', p.id===tid));
+  stopWave();
+  if(tid==='p2') startWave();
+  else if(DRAW[tid]) DRAW[tid]();
+}
+document.querySelectorAll('.iw-tab').forEach(b => b.addEventListener('click', ()=>switchTab(b.dataset.p)));
+
+// ═══════════════════════════════════════════
+// SCROLL REVEAL
+// ═══════════════════════════════════════════
+const ro = new IntersectionObserver(
+  es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }),
+  {threshold:.07}
+);
+document.querySelectorAll('.essay-section').forEach(el => ro.observe(el));
+
+// ═══════════════════════════════════════════
+// PROGRESS BAR
+// ═══════════════════════════════════════════
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  G('bar').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+},{passive:true});
+
+// ═══════════════════════════════════════════
+// SIDE NAV
+// ═══════════════════════════════════════════
+const NAV_IDS=['s1','s2','s3','s4','s5','s6','s7','viz','s8'];
+const NAV_LBL=['YHWH','Boltzmann','Kwanty','Widma','Landauer','Świadomość','Kosmos','Wykresy','Coda'];
+NAV_IDS.forEach((sid,i)=>{
+  const d=document.createElement('div');
+  d.className='sndot'; d.dataset.tip=NAV_LBL[i];
+  d.onclick=()=>document.getElementById(sid)?.scrollIntoView({behavior:'smooth'});
+  G('sn').appendChild(d);
+});
+const navDots=document.querySelectorAll('.sndot');
+window.addEventListener('scroll',()=>{
+  const mid=window.scrollY+window.innerHeight/2;
+  let a=0;
+  NAV_IDS.forEach((sid,i)=>{const el=document.getElementById(sid);if(el&&el.offsetTop<=mid)a=i;});
+  navDots.forEach((d,i)=>d.classList.toggle('active',i===a));
+},{passive:true});
+
+// ═══════════════════════════════════════════
+// INIT — draw all charts immediately on load
+// SVG fills 100% width via CSS, so dimensions
+// are always reliable — no timing issues.
+// ═══════════════════════════════════════════
+window.addEventListener('load', () => {
+  drawG1();
+  drawG3();
+  drawG4();
+  drawG5();
+  // Redraw on resize
+  window.addEventListener('resize', ()=>{
+    const active = document.querySelector('.iw-panel.on')?.id;
+    if(active==='p1') drawG1();
+    else if(active==='p3') drawG3();
+    else if(active==='p4') drawG4();
+    else if(active==='p5') drawG5();
+  });
+});
+</script>
+
+</body>
+</html>
